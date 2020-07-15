@@ -3,18 +3,32 @@ package main
 import (
 	"context"
 	"log"
+	"os"
 	"time"
 
 	sdm "github.com/strongdm/strongdm-sdk-go"
 )
 
-const (
-	rdpServerExampleName = "Example RDP Server"
-)
+func main() {
+	//	Load the SDM API keys from the environment.
+	//	If these values are not set in your environment,
+	//	please follow the documentation here:
+	//	https://www.strongdm.com/docs/admin-guide/api-credentials/
+	accessKey := os.Getenv("SDM_API_ACCESS_KEY")
+	secretKey := os.Getenv("SDM_API_SECRET_KEY")
+	if accessKey == "" || secretKey == "" {
+		log.Fatal("SDM_API_ACCESS_KEY and SDM_API_SECRET_KEY must be provided")
+	}
 
-// CreateRDPServerExample will create, find, and delete a RDP Server resource
-// as an example of the StrongDM Go SDK.
-func CreateRDPServerExample(client *sdm.Client) {
+	client, err := sdm.New(
+		accessKey,
+		secretKey,
+		sdm.WithHost("api.strongdmdev.com:443"),
+	)
+	if err != nil {
+		log.Fatalf("could not create client: %v", err)
+	}
+
 	exampleRDPServer := &sdm.RDP{
 		Name:     "Example RDP Server",
 		Hostname: "example.strongdm.com",
@@ -28,10 +42,6 @@ func CreateRDPServerExample(client *sdm.Client) {
 
 	createResponse, err := client.Resources().Create(ctx, exampleRDPServer)
 	if err != nil {
-		if _, ok := err.(*sdm.AlreadyExistsError); ok {
-			log.Println("Resource already exists, continuing to allow for cleanup.")
-			return
-		}
 		log.Fatalf("Could not create RDP server: %v", err)
 
 	}

@@ -3,14 +3,33 @@ package main
 import (
 	"context"
 	"log"
+	"os"
 	"time"
 
 	sdm "github.com/strongdm/strongdm-sdk-go"
 )
 
-const (
-	eksClusterExampleName                 = "Example AWS EKS Cluster"
-	eksClusterExampleCertificateAuthority = `-----BEGIN CERTIFICATE-----
+func main() {
+	//	Load the SDM API keys from the environment.
+	//	If these values are not set in your environment,
+	//	please follow the documentation here:
+	//	https://www.strongdm.com/docs/admin-guide/api-credentials/
+	accessKey := os.Getenv("SDM_API_ACCESS_KEY")
+	secretKey := os.Getenv("SDM_API_SECRET_KEY")
+	if accessKey == "" || secretKey == "" {
+		log.Fatal("SDM_API_ACCESS_KEY and SDM_API_SECRET_KEY must be provided")
+	}
+
+	client, err := sdm.New(
+		accessKey,
+		secretKey,
+		sdm.WithHost("api.strongdmdev.com:443"),
+	)
+	if err != nil {
+		log.Fatalf("could not create client: %v", err)
+	}
+
+	certificateAuthority := `-----BEGIN CERTIFICATE-----
 MIICpjCCAY4CCQCYJT6s+JVzSTANBgkqhkiG9w0BAQsFADAVMRMwEQYDVQQDDApr
 dWJlcm5ldGVzMB4XDTIwMDcxNTE0MjgzN1oXDTIxMDcxNTE0MjgzN1owFTETMBEG
 A1UEAwwKa3ViZXJuZXRlczCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEB
@@ -28,17 +47,12 @@ FPkubmy3vrhgJySlrfBDtCgFDwSosLniZU479S3oZBsKgPgLe3ELzAw1vLcuIgmd
 JrXnKV7Z4r9uWg==
 -----END CERTIFICATE-----
 `
-)
-
-// CreateEKSClusterExample will create, find, and delete an EKS Cluster
-// as an example of the StrongDM Go SDK.
-func CreateEKSClusterExample(client *sdm.Client) {
 	exampleEKSCluster := &sdm.AmazonEKS{
-		Name:                 eksClusterExampleName,
+		Name:                 "Example EKS Cluster",
 		Endpoint:             "https://A1ADBDD0AE833267869C6ED0476D6B41.gr7.us-east-2.eks.amazonaws.com",
 		AccessKey:            "AKIAIOSFODNN7EXAMPLE",
 		SecretAccessKey:      "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY",
-		CertificateAuthority: eksClusterExampleCertificateAuthority,
+		CertificateAuthority: certificateAuthority,
 		Region:               "us-east-1",
 		ClusterName:          "example",
 		RoleArn:              "arn:aws:iam::000000000000:role/RoleName",
@@ -50,10 +64,6 @@ func CreateEKSClusterExample(client *sdm.Client) {
 
 	createResponse, err := client.Resources().Create(ctx, exampleEKSCluster)
 	if err != nil {
-		if _, ok := err.(*sdm.AlreadyExistsError); ok {
-			log.Println("Resource already exists, continuing to allow for cleanup.")
-			return
-		}
 		log.Fatalf("Could not create EKS Cluster: %v", err)
 
 	}

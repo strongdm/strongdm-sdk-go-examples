@@ -3,14 +3,33 @@ package main
 import (
 	"context"
 	"log"
+	"os"
 	"time"
 
 	sdm "github.com/strongdm/strongdm-sdk-go"
 )
 
-const (
-	sshServerExampleName      = "Example SSH Server"
-	sshServerExamplePublicKey = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQClgTkc" +
+func main() {
+	//	Load the SDM API keys from the environment.
+	//	If these values are not set in your environment,
+	//	please follow the documentation here:
+	//	https://www.strongdm.com/docs/admin-guide/api-credentials/
+	accessKey := os.Getenv("SDM_API_ACCESS_KEY")
+	secretKey := os.Getenv("SDM_API_SECRET_KEY")
+	if accessKey == "" || secretKey == "" {
+		log.Fatal("SDM_API_ACCESS_KEY and SDM_API_SECRET_KEY must be provided")
+	}
+
+	client, err := sdm.New(
+		accessKey,
+		secretKey,
+		sdm.WithHost("api.strongdmdev.com:443"),
+	)
+	if err != nil {
+		log.Fatalf("could not create client: %v", err)
+	}
+
+	publicKey := "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQClgTkc" +
 		"smqpGTlhFCSyT6xTUOSyAo4a66niRZXf/AjB3Cc6H/BE+jSQUjtEJySO5Ak/kjL37ojI" +
 		"mNWZICy3tPWLJsWKb6mzWJmcIZulOoXX2wLnGaVYwNvoo5AKRc9phGwGvuMmKsS9D9Zo" +
 		"X4LRnvw5ONAMATPu/mJ+nGJ03mEHwraYMExaBC6+MkKukZbgumFjAtW7V7zFE6pxSGa2" +
@@ -19,17 +38,13 @@ const (
 		"LcOyFop2bVg6SRIA503D175fEmrV/GdoR3uMhMAh/prhtH5Q1+0OCkbRHAaAdy3kBONV" +
 		"3i3B0ZRWhsH0VbaGYjVNnQJLPkwqsTEWNVrQOq2796M9ko2UhpFCHd6SX1mIQ75lL6kj" +
 		"xaH0iKA7EOaE1aoxFZLNH1MonYgHrHs= example@strongdm.com"
-)
 
-// CreateSSHServerExample will create, find, and delete an SSH Server
-// as an example of the StrongDM Go SDK.
-func CreateSSHServerExample(client *sdm.Client) {
 	exampleSSHServer := &sdm.SSH{
-		Name:      sshServerExampleName,
+		Name:      "Example SSH Server",
 		Hostname:  "203.0.113.23",
 		Username:  "example",
 		Port:      22,
-		PublicKey: sshServerExamplePublicKey,
+		PublicKey: publicKey,
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
