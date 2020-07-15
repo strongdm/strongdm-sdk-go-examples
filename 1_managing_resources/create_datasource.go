@@ -28,21 +28,18 @@ func CreateDatasourceExample(client *sdm.Client) {
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
-	if createResponse, err := client.Resources().Create(ctx, examplePostgresDatasource); err != nil {
+	createResponse, err := client.Resources().Create(ctx, examplePostgresDatasource)
+	if err != nil {
 		if _, ok := err.(*sdm.AlreadyExistsError); ok {
 			log.Println("Resource already exists, continuing to allow for cleanup.")
-		} else {
-			log.Fatalf("Could not create datasource: %v", err)
+			return
 		}
-	} else {
-		id := createResponse.Resource.GetID()
-		name := createResponse.Resource.GetName()
 
-		log.Printf("Successfully created datasource.\n\tName: %v\n\tID: %v\n", name, id)
+		log.Fatalf("Could not create Postgres datasource: %v", err)
 	}
 
-	if cleanupResources {
-		resource := getResourceByName(client, datasourceExampleName)
-		deleteResource(client, resource)
-	}
+	id := createResponse.Resource.GetID()
+	name := createResponse.Resource.GetName()
+
+	log.Printf("Successfully created Postgres datasource.\n\tName: %v\n\tID: %v\n", name, id)
 }

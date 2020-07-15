@@ -35,21 +35,17 @@ func CreateSSHServerExample(client *sdm.Client) {
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
-	if createResponse, err := client.Resources().Create(ctx, exampleSSHServer); err != nil {
+	createResponse, err := client.Resources().Create(ctx, exampleSSHServer)
+	if err != nil {
 		if _, ok := err.(*sdm.AlreadyExistsError); ok {
 			log.Println("Resource already exists, continuing to allow for cleanup.")
-		} else {
-			log.Fatalf("Could not create SSH server: %v", err)
+			return
 		}
-	} else {
-		id := createResponse.Resource.GetID()
-		name := createResponse.Resource.GetName()
+		log.Fatalf("Could not create SSH server: %v", err)
 
-		log.Printf("Successfully created SSH server.\n\tName: %v\n\tID: %v\n", name, id)
 	}
+	id := createResponse.Resource.GetID()
+	name := createResponse.Resource.GetName()
 
-	if cleanupResources {
-		resource := getResourceByName(client, sshServerExampleName)
-		deleteResource(client, resource)
-	}
+	log.Printf("Successfully created SSH server.\n\tName: %v\n\tID: %v\n", name, id)
 }

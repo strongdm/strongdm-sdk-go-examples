@@ -9,6 +9,23 @@ import (
 	sdm "github.com/strongdm/strongdm-sdk-go"
 )
 
+// DeleteExampleResources will attempt to find and delete the resources
+// which are created within the examples.
+func DeleteExampleResources(client *sdm.Client) {
+	resourceNames := []string{
+		datasourceExampleName,
+		eksClusterExampleName,
+		rdpServerExampleName,
+		sshServerExampleName,
+	}
+
+	for _, name := range resourceNames {
+		if resource := getResourceByName(client, name); resource != nil {
+			deleteResource(client, resource)
+		}
+	}
+}
+
 func getResourceByName(client *sdm.Client, name string) sdm.Resource {
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
@@ -21,7 +38,8 @@ func getResourceByName(client *sdm.Client, name string) sdm.Resource {
 	}
 
 	if !resources.Next() {
-		log.Fatalf("could not find resource with name %q", name)
+		log.Printf("could not find resource with name %q\n", name)
+		return nil
 	}
 
 	resource := resources.Value()

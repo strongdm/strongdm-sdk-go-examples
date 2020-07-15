@@ -44,4 +44,9 @@ func main() {
 
 	//	Run the create_ssh_server example.
 	CreateSSHServerExample(client)
+
+	// Cleanup the example resources.
+	if cleanupResources {
+		DeleteExampleResources(client)
+	}
 }

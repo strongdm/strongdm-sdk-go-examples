@@ -48,21 +48,17 @@ func CreateEKSClusterExample(client *sdm.Client) {
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
-	if createResponse, err := client.Resources().Create(ctx, exampleEKSCluster); err != nil {
+	createResponse, err := client.Resources().Create(ctx, exampleEKSCluster)
+	if err != nil {
 		if _, ok := err.(*sdm.AlreadyExistsError); ok {
 			log.Println("Resource already exists, continuing to allow for cleanup.")
-		} else {
-			log.Fatalf("Could not create EKS Cluster: %v", err)
+			return
 		}
-	} else {
-		id := createResponse.Resource.GetID()
-		name := createResponse.Resource.GetName()
+		log.Fatalf("Could not create EKS Cluster: %v", err)
 
-		log.Printf("Successfully created EKS Cluster.\n\tName: %v\n\tID: %v\n", name, id)
 	}
+	id := createResponse.Resource.GetID()
+	name := createResponse.Resource.GetName()
 
-	if cleanupResources {
-		resource := getResourceByName(client, eksClusterExampleName)
-		deleteResource(client, resource)
-	}
+	log.Printf("Successfully created EKS Cluster.\n\tName: %v\n\tID: %v\n", name, id)
 }
