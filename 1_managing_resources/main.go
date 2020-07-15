@@ -7,6 +7,12 @@ import (
 	sdm "github.com/strongdm/strongdm-sdk-go"
 )
 
+const (
+	// Set this to false if you want to leave the resources up for testing or
+	// to view in the admin UI. The example resources will not be functional.
+	cleanupResources = true
+)
+
 func main() {
 	//	Load the SDM API keys from the environment.
 	//	If these values are not set in your environment,

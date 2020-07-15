@@ -9,14 +9,7 @@ import (
 )
 
 const (
-	postgresName             = "Example Postgres Instance"
-	postgresHostname         = "example.strongdm.com"
-	postgresPort             = 5432
-	postgresUsername         = "example"
-	postgresPassword         = "example"
-	postgresDatabase         = "example"
-	postgresOverrideDatabase = true
-	postgresCleanupResource  = true
+	datasourceExampleName = "Example Postgres Instance"
 )
 
 // CreateDatasourceExample will create, find, and delete a Postgres datasource
@@ -25,21 +18,21 @@ func CreateDatasourceExample(client *sdm.Client) {
 
 	createDatasource(client)
 
-	if postgresCleanupResource {
-		resource := getResourceByName(client, postgresName)
+	if cleanupResources {
+		resource := getResourceByName(client, datasourceExampleName)
 		deleteResource(client, resource)
 	}
 }
 
 func createDatasource(client *sdm.Client) {
 	examplePostgresDatasource := &sdm.Postgres{
-		Name:             postgresName,
-		Hostname:         postgresHostname,
-		Port:             postgresPort,
-		Username:         postgresUsername,
-		Password:         postgresPassword,
-		Database:         postgresDatabase,
-		OverrideDatabase: postgresOverrideDatabase,
+		Name:             datasourceExampleName,
+		Hostname:         "example.strongdm.com",
+		Port:             5432,
+		Username:         "example",
+		Password:         "example",
+		Database:         "example",
+		OverrideDatabase: true,
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
