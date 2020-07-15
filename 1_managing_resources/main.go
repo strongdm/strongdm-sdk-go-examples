@@ -37,7 +37,7 @@ func main() {
 	CreateDatasourceExample(client)
 
 	//	Run the create_eks_cluster example.
-	//CreateEKSCluster(client)
+	CreateEKSClusterExample(client)
 
 	//	Run the create_rdp_server example.
 	//CreateRDPServer(client)
