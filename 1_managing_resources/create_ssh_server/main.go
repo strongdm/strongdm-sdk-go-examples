@@ -1,3 +1,17 @@
+// Copyright 2020 StrongDM Inc
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
 package main
 
 import (
@@ -28,22 +42,11 @@ func main() {
 		log.Fatalf("could not create client: %v", err)
 	}
 
-	publicKey := "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQClgTkc" +
-		"smqpGTlhFCSyT6xTUOSyAo4a66niRZXf/AjB3Cc6H/BE+jSQUjtEJySO5Ak/kjL37ojI" +
-		"mNWZICy3tPWLJsWKb6mzWJmcIZulOoXX2wLnGaVYwNvoo5AKRc9phGwGvuMmKsS9D9Zo" +
-		"X4LRnvw5ONAMATPu/mJ+nGJ03mEHwraYMExaBC6+MkKukZbgumFjAtW7V7zFE6pxSGa2" +
-		"BEG0fXDSED+ZcvxcqIyB+HKdYXyA91HhvRF0jGxwrDDcbHgVek9JJyYvNAdUpCwuU67j" +
-		"yhtRdnM13bPGt0zpd8tgNBmr+/Vvx95/ZFB6+qj0hNEygslHebm2S3jXdfrPH8KF+XxB" +
-		"LcOyFop2bVg6SRIA503D175fEmrV/GdoR3uMhMAh/prhtH5Q1+0OCkbRHAaAdy3kBONV" +
-		"3i3B0ZRWhsH0VbaGYjVNnQJLPkwqsTEWNVrQOq2796M9ko2UhpFCHd6SX1mIQ75lL6kj" +
-		"xaH0iKA7EOaE1aoxFZLNH1MonYgHrHs= example@strongdm.com"
-
 	exampleSSHServer := &sdm.SSH{
-		Name:      "Example SSH Server",
-		Hostname:  "203.0.113.23",
-		Username:  "example",
-		Port:      22,
-		PublicKey: publicKey,
+		Name:     "Example SSH Server",
+		Hostname: "203.0.113.23",
+		Username: "example",
+		Port:     22,
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
@@ -51,13 +54,9 @@ func main() {
 
 	createResponse, err := client.Resources().Create(ctx, exampleSSHServer)
 	if err != nil {
-		if _, ok := err.(*sdm.AlreadyExistsError); ok {
-			log.Println("Resource already exists, continuing to allow for cleanup.")
-			return
-		}
 		log.Fatalf("Could not create SSH server: %v", err)
-
 	}
+
 	id := createResponse.Resource.GetID()
 	name := createResponse.Resource.GetName()
 
