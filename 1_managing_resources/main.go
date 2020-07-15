@@ -40,7 +40,7 @@ func main() {
 	CreateEKSClusterExample(client)
 
 	//	Run the create_rdp_server example.
-	//CreateRDPServer(client)
+	CreateRDPServerExample(client)
 
 	//	Run the create_ssh_server example.
 	CreateSSHServerExample(client)
