@@ -9,22 +9,12 @@ import (
 )
 
 const (
-	datasourceExampleName = "Example Postgres Instance"
+	datasourceExampleName = "Example Postgres Datasource"
 )
 
 // CreateDatasourceExample will create, find, and delete a Postgres datasource
 // as an example of the StrongDM Go SDK.
 func CreateDatasourceExample(client *sdm.Client) {
-
-	createDatasource(client)
-
-	if cleanupResources {
-		resource := getResourceByName(client, datasourceExampleName)
-		deleteResource(client, resource)
-	}
-}
-
-func createDatasource(client *sdm.Client) {
 	examplePostgresDatasource := &sdm.Postgres{
 		Name:             datasourceExampleName,
 		Hostname:         "example.strongdm.com",
@@ -38,17 +28,21 @@ func createDatasource(client *sdm.Client) {
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
-	createResponse, err := client.Resources().Create(ctx, examplePostgresDatasource)
-	if err != nil {
+	if createResponse, err := client.Resources().Create(ctx, examplePostgresDatasource); err != nil {
 		if _, ok := err.(*sdm.AlreadyExistsError); ok {
 			log.Println("Resource already exists, continuing to allow for cleanup.")
-			return
+		} else {
+			log.Fatalf("Could not create datasource: %v", err)
 		}
-		log.Fatalf("Could not create Postgres datasource: %v", err)
+	} else {
+		id := createResponse.Resource.GetID()
+		name := createResponse.Resource.GetName()
+
+		log.Printf("Successfully created datasource.\n\tName: %v\n\tID: %v\n", name, id)
 	}
 
-	id := createResponse.Resource.GetID()
-	name := createResponse.Resource.GetName()
-
-	log.Printf("Successfully created Postgres resource.\n\tName: %v\n\tID: %v\n", name, id)
+	if cleanupResources {
+		resource := getResourceByName(client, datasourceExampleName)
+		deleteResource(client, resource)
+	}
 }

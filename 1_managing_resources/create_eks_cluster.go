@@ -9,23 +9,8 @@ import (
 )
 
 const (
-	eksClusterExampleName = "Example AWS EKS Cluster"
-)
-
-// CreateEKSClusterExample will create, find, and delete an EKS Cluster
-// as an example of the StrongDM Go SDK.
-func CreateEKSClusterExample(client *sdm.Client) {
-
-	createEKSCluster(client)
-
-	if cleanupResources {
-		resource := getResourceByName(client, eksClusterExampleName)
-		deleteResource(client, resource)
-	}
-}
-
-func createEKSCluster(client *sdm.Client) {
-	certificateAuthority := `-----BEGIN CERTIFICATE-----
+	eksClusterExampleName                 = "Example AWS EKS Cluster"
+	eksClusterExampleCertificateAuthority = `-----BEGIN CERTIFICATE-----
 MIICpjCCAY4CCQCYJT6s+JVzSTANBgkqhkiG9w0BAQsFADAVMRMwEQYDVQQDDApr
 dWJlcm5ldGVzMB4XDTIwMDcxNTE0MjgzN1oXDTIxMDcxNTE0MjgzN1owFTETMBEG
 A1UEAwwKa3ViZXJuZXRlczCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEB
@@ -43,12 +28,17 @@ FPkubmy3vrhgJySlrfBDtCgFDwSosLniZU479S3oZBsKgPgLe3ELzAw1vLcuIgmd
 JrXnKV7Z4r9uWg==
 -----END CERTIFICATE-----
 `
+)
+
+// CreateEKSClusterExample will create, find, and delete an EKS Cluster
+// as an example of the StrongDM Go SDK.
+func CreateEKSClusterExample(client *sdm.Client) {
 	exampleEKSCluster := &sdm.AmazonEKS{
 		Name:                 eksClusterExampleName,
 		Endpoint:             "https://A1ADBDD0AE833267869C6ED0476D6B41.gr7.us-east-2.eks.amazonaws.com",
 		AccessKey:            "AKIAIOSFODNN7EXAMPLE",
 		SecretAccessKey:      "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY",
-		CertificateAuthority: certificateAuthority,
+		CertificateAuthority: eksClusterExampleCertificateAuthority,
 		Region:               "us-east-1",
 		ClusterName:          "example",
 		RoleArn:              "arn:aws:iam::000000000000:role/RoleName",
@@ -58,17 +48,21 @@ JrXnKV7Z4r9uWg==
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
-	createResponse, err := client.Resources().Create(ctx, exampleEKSCluster)
-	if err != nil {
+	if createResponse, err := client.Resources().Create(ctx, exampleEKSCluster); err != nil {
 		if _, ok := err.(*sdm.AlreadyExistsError); ok {
 			log.Println("Resource already exists, continuing to allow for cleanup.")
-			return
+		} else {
+			log.Fatalf("Could not create EKS Cluster: %v", err)
 		}
-		log.Fatalf("Could not create Amazon EKS cluster: %v", err)
+	} else {
+		id := createResponse.Resource.GetID()
+		name := createResponse.Resource.GetName()
+
+		log.Printf("Successfully created EKS Cluster.\n\tName: %v\n\tID: %v\n", name, id)
 	}
 
-	id := createResponse.Resource.GetID()
-	name := createResponse.Resource.GetName()
-
-	log.Printf("Successfully created Amazon EKS cluster.\n\tName: %v\n\tID: %v\n", name, id)
+	if cleanupResources {
+		resource := getResourceByName(client, eksClusterExampleName)
+		deleteResource(client, resource)
+	}
 }
