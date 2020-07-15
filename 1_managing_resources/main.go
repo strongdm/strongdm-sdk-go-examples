@@ -43,5 +43,5 @@ func main() {
 	//CreateRDPServer(client)
 
 	//	Run the create_ssh_server example.
-	//CreateSSHServer(client)
+	CreateSSHServerExample(client)
 }
