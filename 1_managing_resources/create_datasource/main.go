@@ -43,13 +43,12 @@ func main() {
 	}
 
 	examplePostgresDatasource := &sdm.Postgres{
-		Name:             "Example Postgres Datasource",
-		Hostname:         "example.strongdm.com",
-		Port:             5432,
-		Username:         "example",
-		Password:         "example",
-		Database:         "example",
-		OverrideDatabase: true,
+		Name:     "Example Postgres Datasource",
+		Hostname: "example.strongdm.com",
+		Port:     5432,
+		Username: "example",
+		Password: "example",
+		Database: "example",
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
