@@ -55,6 +55,7 @@ func main() {
 	}
 
 	id := createResponse.Account.GetID()
+	token := createResponse.Token
 
-	log.Printf("Successfully created service account.\n\tID: %v\n", id)
+	log.Printf("Successfully created service account.\n\tID: %v\n\tToken: %v\n", id, token)
 }
