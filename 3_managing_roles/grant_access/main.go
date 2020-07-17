@@ -93,4 +93,33 @@ func main() {
 	grantID := grantResponse.RoleGrant.ID
 
 	log.Printf("Successfully created role grant.\n\tID: %v\n", grantID)
+
+	// Create a user
+	user := &sdm.User{
+		Email:     "example@example.com",
+		FirstName: "example",
+		LastName:  "example",
+	}
+
+	accountResponse, err := client.Accounts().Create(ctx, user)
+	if err != nil {
+		log.Fatalf("Could not create user: %v", err)
+	}
+
+	accountID := accountResponse.Account.GetID()
+	log.Printf("Successfully created user.\n\tID: %v\n", accountID)
+
+	// Assign account to role
+	attachment := &sdm.AccountAttachment{
+		AccountID: accountID,
+		RoleID:    roleID,
+	}
+
+	attachmentResponse, err := client.AccountAttachments().Create(ctx, attachment)
+	if err != nil {
+		log.Fatalf("Could not create account attachment: %v", err)
+	}
+
+	attachmentID := attachmentResponse.AccountAttachment.ID
+	log.Printf("Successfully created account attachment.\n\tID: %v\n", attachmentID)
 }
