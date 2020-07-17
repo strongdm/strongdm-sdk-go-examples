@@ -56,7 +56,7 @@ func main() {
 		log.Fatalf("Could not create gateway: %v", err)
 	}
 
-	gatewayID := gatewayResponse.Node.GetID()
-
-	log.Printf("Successfully created gateway.\n\tID: %v\n", gatewayID)
+	id := gatewayResponse.Node.GetID()
+	token := gatewayResponse.Token
+	log.Printf("Successfully created gateway.\n\tID: %v\n\tToken: %v\n", id, token)
 }

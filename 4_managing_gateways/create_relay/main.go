@@ -55,7 +55,7 @@ func main() {
 		log.Fatalf("Could not create relay: %v", err)
 	}
 
-	relayID := relayResponse.Node.GetID()
-
-	log.Printf("Successfully created relay.\n\tID: %v\n", relayID)
+	id := relayResponse.Node.GetID()
+	token := relayResponse.Token
+	log.Printf("Successfully created relay.\n\tID: %v\n\tToken: %v\n", id, token)
 }
