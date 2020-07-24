@@ -65,9 +65,10 @@ func main() {
 	}
 
 	id := createResponse.Resource.GetID()
-	name := createResponse.Resource.GetName()
 
-	log.Printf("Successfully created Postgres datasource.\n\tName: %v\n\tID: %v\n", name, id)
+	log.Println("Successfully created Postgres datasource.")
+	log.Println("    ID:", id)
+	log.Println("  Name:", createResponse.Resource.GetName())
 
 	// Load the datasource to update
 	getResponse, err := client.Resources().Get(ctx, id)
@@ -85,8 +86,7 @@ func main() {
 		log.Fatalf("Could not update Postgres datasource: %v", err)
 	}
 
-	id = updateResponse.Resource.GetID()
-	name = updateResponse.Resource.GetName()
-
-	log.Printf("Successfully udpated Postgres datasource.\n\tName: %v\n\tID: %v\n", name, id)
+	log.Println("Successfully created Postgres datasource.")
+	log.Println("    ID:", updateResponse.Resource.GetID())
+	log.Println("  Name:", updateResponse.Resource.GetName())
 }

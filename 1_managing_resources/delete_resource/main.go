@@ -65,9 +65,10 @@ func main() {
 	}
 
 	id := createResponse.Resource.GetID()
-	name := createResponse.Resource.GetName()
 
-	log.Printf("Successfully created Postgres datasource.\n\tName: %v\n\tID: %v\n", name, id)
+	log.Println("Successfully created Postgres datasource.")
+	log.Println("    ID:", id)
+	log.Println("  Name:", createResponse.Resource.GetName())
 
 	// Delete the resource
 	_, err = client.Resources().Delete(ctx, id)

@@ -34,6 +34,7 @@ func main() {
 		log.Fatal("SDM_API_ACCESS_KEY and SDM_API_SECRET_KEY must be provided")
 	}
 
+	// Create the client
 	client, err := sdm.New(
 		accessKey,
 		secretKey,
@@ -42,7 +43,8 @@ func main() {
 		log.Fatalf("could not create client: %v", err)
 	}
 
-	examplePostgresDatasource := &sdm.Postgres{
+	// Define the Postgres datasource
+	datasource := &sdm.Postgres{
 		Name:     "Example Postgres Datasource",
 		Hostname: "example.strongdm.com",
 		Port:     5432,
@@ -51,16 +53,16 @@ func main() {
 		Database: "example",
 	}
 
+	// Create the datasource
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
-	createResponse, err := client.Resources().Create(ctx, examplePostgresDatasource)
+	createResponse, err := client.Resources().Create(ctx, datasource)
 	if err != nil {
 		log.Fatalf("Could not create Postgres datasource: %v", err)
 	}
 
-	id := createResponse.Resource.GetID()
-	name := createResponse.Resource.GetName()
-
-	log.Printf("Successfully created Postgres datasource.\n\tName: %v\n\tID: %v\n", name, id)
+	log.Println("Successfully created Postgres datasource.")
+	log.Println("    ID:", createResponse.Resource.GetID())
+	log.Println("  Name:", createResponse.Resource.GetName())
 }

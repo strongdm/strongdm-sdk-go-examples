@@ -34,6 +34,7 @@ func main() {
 		log.Fatal("SDM_API_ACCESS_KEY and SDM_API_SECRET_KEY must be provided")
 	}
 
+	// Create the client
 	client, err := sdm.New(
 		accessKey,
 		secretKey,
@@ -42,6 +43,7 @@ func main() {
 		log.Fatalf("could not create client: %v", err)
 	}
 
+	// Define the Amazon EKS cluster
 	certificateAuthority := `-----BEGIN CERTIFICATE-----
 MIICpjCCAY4CCQCYJT6s+JVzSTANBgkqhkiG9w0BAQsFADAVMRMwEQYDVQQDDApr
 dWJlcm5ldGVzMB4XDTIwMDcxNTE0MjgzN1oXDTIxMDcxNTE0MjgzN1owFTETMBEG
@@ -60,7 +62,7 @@ FPkubmy3vrhgJySlrfBDtCgFDwSosLniZU479S3oZBsKgPgLe3ELzAw1vLcuIgmd
 JrXnKV7Z4r9uWg==
 -----END CERTIFICATE-----
 `
-	exampleEKSCluster := &sdm.AmazonEKS{
+	cluster := &sdm.AmazonEKS{
 		Name:                 "Example EKS Cluster",
 		Endpoint:             "https://A1ADBDD0AE833267869C6ED0476D6B41.gr7.us-east-2.eks.amazonaws.com",
 		AccessKey:            "AKIAIOSFODNN7EXAMPLE",
@@ -72,16 +74,16 @@ JrXnKV7Z4r9uWg==
 		HealthcheckNamespace: "default",
 	}
 
+	// Create the cluster
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
-	createResponse, err := client.Resources().Create(ctx, exampleEKSCluster)
+	createResponse, err := client.Resources().Create(ctx, cluster)
 	if err != nil {
 		log.Fatalf("Could not create EKS Cluster: %v", err)
 	}
 
-	id := createResponse.Resource.GetID()
-	name := createResponse.Resource.GetName()
-
-	log.Printf("Successfully created EKS Cluster.\n\tName: %v\n\tID: %v\n", name, id)
+	log.Println("Successfully created Postgres datasource.")
+	log.Println("    ID:", createResponse.Resource.GetID())
+	log.Println("  Name:", createResponse.Resource.GetName())
 }

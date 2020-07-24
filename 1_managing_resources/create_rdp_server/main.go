@@ -34,6 +34,7 @@ func main() {
 		log.Fatal("SDM_API_ACCESS_KEY and SDM_API_SECRET_KEY must be provided")
 	}
 
+	// Create the client
 	client, err := sdm.New(
 		accessKey,
 		secretKey,
@@ -42,7 +43,8 @@ func main() {
 		log.Fatalf("could not create client: %v", err)
 	}
 
-	exampleRDPServer := &sdm.RDP{
+	// Define the RDP server
+	server := &sdm.RDP{
 		Name:     "Example RDP Server",
 		Hostname: "example.strongdm.com",
 		Username: "example",
@@ -50,16 +52,16 @@ func main() {
 		Port:     3389,
 	}
 
+	// Create the server
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
-	createResponse, err := client.Resources().Create(ctx, exampleRDPServer)
+	createResponse, err := client.Resources().Create(ctx, server)
 	if err != nil {
 		log.Fatalf("Could not create RDP server: %v", err)
 	}
 
-	id := createResponse.Resource.GetID()
-	name := createResponse.Resource.GetName()
-
-	log.Printf("Successfully created RDP server.\n\tName: %v\n\tID: %v\n", name, id)
+	log.Println("Successfully created Postgres datasource.")
+	log.Println("    ID:", createResponse.Resource.GetID())
+	log.Println("  Name:", createResponse.Resource.GetName())
 }

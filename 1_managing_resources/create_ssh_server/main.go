@@ -34,6 +34,7 @@ func main() {
 		log.Fatal("SDM_API_ACCESS_KEY and SDM_API_SECRET_KEY must be provided")
 	}
 
+	// Create the client
 	client, err := sdm.New(
 		accessKey,
 		secretKey,
@@ -42,23 +43,24 @@ func main() {
 		log.Fatalf("could not create client: %v", err)
 	}
 
-	exampleSSHServer := &sdm.SSH{
+	// Define the SSH server
+	server := &sdm.SSH{
 		Name:     "Example SSH Server",
 		Hostname: "203.0.113.23",
 		Username: "example",
 		Port:     22,
 	}
 
+	// Create the server
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
-	createResponse, err := client.Resources().Create(ctx, exampleSSHServer)
+	createResponse, err := client.Resources().Create(ctx, server)
 	if err != nil {
 		log.Fatalf("Could not create SSH server: %v", err)
 	}
 
-	id := createResponse.Resource.GetID()
-	name := createResponse.Resource.GetName()
-
-	log.Printf("Successfully created SSH server.\n\tName: %v\n\tID: %v\n", name, id)
+	log.Println("Successfully created Postgres datasource.")
+	log.Println("    ID:", createResponse.Resource.GetID())
+	log.Println("  Name:", createResponse.Resource.GetName())
 }
