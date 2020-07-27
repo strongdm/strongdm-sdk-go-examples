@@ -70,6 +70,7 @@ func main() {
 		Password:         "example",
 		Database:         "example",
 		OverrideDatabase: true,
+		PortOverride:     19999,
 	}
 
 	resourceResponse, err := client.Resources().Create(ctx, examplePostgresDatasource)
