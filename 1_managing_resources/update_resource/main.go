@@ -38,7 +38,6 @@ func main() {
 	client, err := sdm.New(
 		accessKey,
 		secretKey,
-		sdm.WithHost("api.strongdmdev.com:443"),
 	)
 	if err != nil {
 		log.Fatalf("could not create client: %v", err)
