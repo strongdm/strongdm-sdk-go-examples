@@ -51,7 +51,7 @@ func main() {
 		Username:     "example",
 		Password:     "example",
 		Database:     "example",
-		PortOverride: 15432,
+		PortOverride: 19999,
 	}
 
 	// Create the datasource
