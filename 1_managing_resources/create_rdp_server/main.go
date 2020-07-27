@@ -45,11 +45,12 @@ func main() {
 
 	// Define the RDP server
 	server := &sdm.RDP{
-		Name:     "Example RDP Server",
-		Hostname: "example.strongdm.com",
-		Username: "example",
-		Password: "example",
-		Port:     3389,
+		Name:         "Example RDP Server",
+		Hostname:     "example.strongdm.com",
+		Username:     "example",
+		Password:     "example",
+		Port:         3389,
+		PortOverride: 19999,
 	}
 
 	// Create the server
