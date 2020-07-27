@@ -45,12 +45,13 @@ func main() {
 
 	// Define the Postgres datasource
 	datasource := &sdm.Postgres{
-		Name:     "Example Postgres Datasource",
-		Hostname: "example.strongdm.com",
-		Port:     5432,
-		Username: "example",
-		Password: "example",
-		Database: "example",
+		Name:         "Example Postgres Datasource",
+		Hostname:     "example.strongdm.com",
+		Port:         5432,
+		Username:     "example",
+		Password:     "example",
+		Database:     "example",
+		PortOverride: 15432,
 	}
 
 	// Create the datasource
