@@ -86,8 +86,6 @@ func main() {
 	accountGrant := &sdm.AccountGrant{
 		ResourceID: resourceID,
 		AccountID:  accountID,
-		StartFrom:  time.Now().Add(time.Hour).UTC(),
-		ValidUntil: time.Now().Add(time.Hour * 2).UTC(),
 	}
 
 	grantResponse, err := client.AccountGrants().Create(ctx, accountGrant)
