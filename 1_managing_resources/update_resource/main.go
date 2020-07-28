@@ -85,7 +85,7 @@ func main() {
 		log.Fatalf("Could not update Postgres datasource: %v", err)
 	}
 
-	log.Println("Successfully created Postgres datasource.")
+	log.Println("Successfully updated Postgres datasource.")
 	log.Println("    ID:", updateResponse.Resource.GetID())
 	log.Println("  Name:", updateResponse.Resource.GetName())
 }
