@@ -73,7 +73,7 @@ func main() {
 	node := getResponse.Node
 	gateway, ok := node.(*sdm.Gateway)
 	if !ok {
-		log.Fatalf("unexpected type of node")
+		log.Fatalf("Unexpected type of node: %T", node)
 	}
 	gateway.Name = "example-gateway-updated"
 
