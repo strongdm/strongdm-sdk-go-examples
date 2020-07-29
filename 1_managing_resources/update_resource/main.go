@@ -77,7 +77,7 @@ func main() {
 	updatedPostgresDatasource := getResponse.Resource
 
 	// Update the fields to change
-	updatedPostgresDatasource.SetName("Updated Example Name")
+	updatedPostgresDatasource.SetName("Example Name Updated")
 
 	// Update the datasource
 	updateResponse, err := client.Resources().Update(ctx, updatedPostgresDatasource)
