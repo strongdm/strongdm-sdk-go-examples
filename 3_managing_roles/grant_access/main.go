@@ -16,6 +16,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"os"
 	"time"
@@ -64,8 +65,8 @@ func main() {
 	}
 
 	resourceID := resourceResponse.Resource.GetID()
-
-	log.Printf("Successfully created Postgres datasource.\n\tID: %v\n", resourceID)
+	fmt.Println("Successfully created Postgres datasource.")
+	fmt.Println("\tID:", resourceID)
 
 	// Create a role
 	role := &sdm.Role{
@@ -78,7 +79,8 @@ func main() {
 	}
 
 	roleID := roleResponse.Role.ID
-	log.Printf("Successfully created role.\n\tID: %v\n", roleID)
+	fmt.Println("Successfully created role.")
+	fmt.Println("\tID:", roleID)
 
 	// Create a role grant
 	grant := &sdm.RoleGrant{
@@ -92,8 +94,8 @@ func main() {
 	}
 
 	grantID := grantResponse.RoleGrant.ID
-
-	log.Printf("Successfully created role grant.\n\tID: %v\n", grantID)
+	fmt.Println("Successfully created role grant.")
+	fmt.Println("\tID:", grantID)
 
 	// Create a user
 	user := &sdm.User{
@@ -108,7 +110,8 @@ func main() {
 	}
 
 	accountID := accountResponse.Account.GetID()
-	log.Printf("Successfully created user.\n\tID: %v\n", accountID)
+	fmt.Println("Successfully created user.")
+	fmt.Println("\tID:", accountID)
 
 	// Assign account to role
 	attachment := &sdm.AccountAttachment{
@@ -122,5 +125,6 @@ func main() {
 	}
 
 	attachmentID := attachmentResponse.AccountAttachment.ID
-	log.Printf("Successfully created account attachment.\n\tID: %v\n", attachmentID)
+	fmt.Println("Successfully created account attachment.")
+	fmt.Println("\tID:", attachmentID)
 }

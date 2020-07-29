@@ -16,6 +16,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"os"
 	"time"
@@ -58,5 +59,7 @@ func main() {
 
 	id := gatewayResponse.Node.GetID()
 	token := gatewayResponse.Token
-	log.Printf("Successfully created gateway.\n\tID: %v\n\tToken: %v\n", id, token)
+	fmt.Println("Successfully created gateway.")
+	fmt.Println("\tID:", id)
+	fmt.Println("\tToken:", token)
 }

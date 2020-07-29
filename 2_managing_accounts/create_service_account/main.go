@@ -16,6 +16,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"os"
 	"time"
@@ -57,5 +58,7 @@ func main() {
 	id := createResponse.Account.GetID()
 	token := createResponse.Token
 
-	log.Printf("Successfully created service account.\n\tID: %v\n\tToken: %v\n", id, token)
+	fmt.Println("Successfully created service account.")
+	fmt.Println("\tID:", id)
+	fmt.Println("\tToken:", token)
 }

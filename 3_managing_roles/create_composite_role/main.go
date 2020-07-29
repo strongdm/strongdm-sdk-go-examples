@@ -16,6 +16,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"os"
 	"time"
@@ -57,7 +58,8 @@ func main() {
 	}
 
 	roleID := roleResponse.Role.ID
-	log.Printf("Successfully created role.\n\tID: %v\n", roleID)
+	fmt.Println("Successfully created role.")
+	fmt.Println("\tID:", roleID)
 
 	// Create a composite role
 	composite := &sdm.Role{
@@ -71,7 +73,8 @@ func main() {
 	}
 
 	compositeID := roleResponse.Role.ID
-	log.Printf("Successfully created composite role.\n\tID: %v\n", compositeID)
+	fmt.Println("Successfully created composite role.")
+	fmt.Println("\tID:", compositeID)
 
 	// Attach role to composite
 	attachment := &sdm.RoleAttachment{
@@ -85,5 +88,6 @@ func main() {
 	}
 
 	attachmentID := attachmentResponse.RoleAttachment.ID
-	log.Printf("Successfully created attached role to composite role.\n\tID: %v\n", attachmentID)
+	fmt.Println("Successfully created attached role to composite role.")
+	fmt.Println("\tID:", attachmentID)
 }

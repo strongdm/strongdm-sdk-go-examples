@@ -16,6 +16,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"os"
 	"time"
@@ -62,7 +63,7 @@ func main() {
 		log.Fatalf("Could not create RDP server: %v", err)
 	}
 
-	log.Println("Successfully created Postgres datasource.")
-	log.Println("    ID:", createResponse.Resource.GetID())
-	log.Println("  Name:", createResponse.Resource.GetName())
+	fmt.Println("Successfully created Postgres datasource.")
+	fmt.Println("\tID:", createResponse.Resource.GetID())
+	fmt.Println("\tName:", createResponse.Resource.GetName())
 }

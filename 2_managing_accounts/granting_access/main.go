@@ -16,6 +16,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"os"
 	"time"
@@ -59,7 +60,8 @@ func main() {
 	}
 
 	accountID := accountResponse.Account.GetID()
-	log.Printf("Successfully created user.\n\tID: %v\n", accountID)
+	fmt.Println("Successfully created user.")
+	fmt.Println("\tID:", accountID)
 
 	// Create a datasource
 	examplePostgresDatasource := &sdm.Postgres{
@@ -79,8 +81,8 @@ func main() {
 	}
 
 	resourceID := resourceResponse.Resource.GetID()
-
-	log.Printf("Successfully created Postgres datasource.\n\tID: %v\n", resourceID)
+	fmt.Println("Successfully created Postgres datasource.")
+	fmt.Println("\tID:", resourceID)
 
 	// Create an account grant
 	accountGrant := &sdm.AccountGrant{
@@ -94,6 +96,6 @@ func main() {
 	}
 
 	grantID := grantResponse.AccountGrant.ID
-
-	log.Printf("Successfully created account grant.\n\tID: %v\n", grantID)
+	fmt.Println("Successfully created account grant.")
+	fmt.Println("\tID:", grantID)
 }

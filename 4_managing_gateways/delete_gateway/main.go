@@ -16,6 +16,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"os"
 	"time"
@@ -58,14 +59,14 @@ func main() {
 
 	id := createResponse.Node.GetID()
 	token := createResponse.Token
-	log.Println("Successfully created gateway.")
-	log.Println("\tID:", id)
-	log.Println("\tToken:", token)
+	fmt.Println("Successfully created gateway.")
+	fmt.Println("\tID:", id)
+	fmt.Println("\tToken:", token)
 
 	// Delete the gateway
 	_, err = client.Nodes().Delete(ctx, id)
 	if err != nil {
 		log.Fatalf("Could not delete gateway: %v", err)
 	}
-	log.Println("Successfully deleted gateway.")
+	fmt.Println("Successfully deleted gateway.")
 }

@@ -16,6 +16,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"os"
 	"time"
@@ -57,5 +58,6 @@ func main() {
 	}
 
 	roleID := roleResponse.Role.ID
-	log.Printf("Successfully created role.\n\tID: %v\n", roleID)
+	fmt.Println("Successfully created role.")
+	fmt.Println("\tID:", roleID)
 }

@@ -16,6 +16,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"os"
 	"time"
@@ -57,5 +58,7 @@ func main() {
 
 	id := relayResponse.Node.GetID()
 	token := relayResponse.Token
-	log.Printf("Successfully created relay.\n\tID: %v\n\tToken: %v\n", id, token)
+	fmt.Println("Successfully created relay.")
+	fmt.Println("\tID:", id)
+	fmt.Println("\tToken:", token)
 }

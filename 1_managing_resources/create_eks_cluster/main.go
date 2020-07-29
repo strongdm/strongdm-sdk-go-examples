@@ -16,6 +16,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"os"
 	"time"
@@ -83,7 +84,7 @@ JrXnKV7Z4r9uWg==
 		log.Fatalf("Could not create EKS Cluster: %v", err)
 	}
 
-	log.Println("Successfully created Postgres datasource.")
-	log.Println("    ID:", createResponse.Resource.GetID())
-	log.Println("  Name:", createResponse.Resource.GetName())
+	fmt.Println("Successfully created Postgres datasource.")
+	fmt.Println("\tID:", createResponse.Resource.GetID())
+	fmt.Println("\tName:", createResponse.Resource.GetName())
 }

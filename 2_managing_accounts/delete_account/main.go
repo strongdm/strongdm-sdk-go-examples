@@ -16,6 +16,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"os"
 	"time"
@@ -57,11 +58,12 @@ func main() {
 	}
 
 	id := createResponse.Account.GetID()
-	log.Printf("Successfully created user.\n\tID: %v\n", id)
+	fmt.Println("Successfully created user.")
+	fmt.Println("\tID:", id)
 
 	_, err = client.Accounts().Delete(ctx, id)
 	if err != nil {
 		log.Fatalf("Could not delete account: %v", err)
 	}
-	log.Println("Successfully deleted account.\n")
+	fmt.Println("Successfully deleted account.")
 }

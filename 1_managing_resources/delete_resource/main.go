@@ -16,6 +16,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"os"
 	"time"
@@ -65,9 +66,9 @@ func main() {
 
 	id := createResponse.Resource.GetID()
 
-	log.Println("Successfully created Postgres datasource.")
-	log.Println("    ID:", id)
-	log.Println("  Name:", createResponse.Resource.GetName())
+	fmt.Println("Successfully created Postgres datasource.")
+	fmt.Println("\tID:", id)
+	fmt.Println("\tName:", createResponse.Resource.GetName())
 
 	// Delete the resource
 	_, err = client.Resources().Delete(ctx, id)
@@ -75,5 +76,5 @@ func main() {
 		log.Fatalf("Could not delete Postgres datasource: %v", err)
 	}
 
-	log.Println("Successfully delete Postgres datasource.")
+	fmt.Println("Successfully delete Postgres datasource.")
 }

@@ -16,6 +16,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"os"
 	"time"
@@ -58,9 +59,9 @@ func main() {
 
 	id := createResponse.Node.GetID()
 	token := createResponse.Token
-	log.Println("Successfully created gateway.")
-	log.Println("\tID:", id)
-	log.Println("\tToken:", token)
+	fmt.Println("Successfully created gateway.")
+	fmt.Println("\tID:", id)
+	fmt.Println("\tToken:", token)
 
 	// Get the gateway
 	getResponse, err := client.Nodes().Get(ctx, id)
@@ -81,6 +82,6 @@ func main() {
 	if err != nil {
 		log.Fatalf("Could not update gateway: %v", err)
 	}
-	log.Println("Successfully updated gateway.")
-	log.Println("\tID:", updateResponse.Node.GetID())
+	fmt.Println("Successfully updated gateway.")
+	fmt.Println("\tID:", updateResponse.Node.GetID())
 }

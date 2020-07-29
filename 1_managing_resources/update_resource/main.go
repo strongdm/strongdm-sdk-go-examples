@@ -16,6 +16,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"os"
 	"time"
@@ -65,9 +66,9 @@ func main() {
 
 	id := createResponse.Resource.GetID()
 
-	log.Println("Successfully created Postgres datasource.")
-	log.Println("    ID:", id)
-	log.Println("  Name:", createResponse.Resource.GetName())
+	fmt.Println("Successfully created Postgres datasource.")
+	fmt.Println("\tID:", id)
+	fmt.Println("\tName:", createResponse.Resource.GetName())
 
 	// Load the datasource to update
 	getResponse, err := client.Resources().Get(ctx, id)
@@ -85,7 +86,7 @@ func main() {
 		log.Fatalf("Could not update Postgres datasource: %v", err)
 	}
 
-	log.Println("Successfully updated Postgres datasource.")
-	log.Println("    ID:", updateResponse.Resource.GetID())
-	log.Println("  Name:", updateResponse.Resource.GetName())
+	fmt.Println("Successfully updated Postgres datasource.")
+	fmt.Println("\tID:", updateResponse.Resource.GetID())
+	fmt.Println("\tName:", updateResponse.Resource.GetName())
 }

@@ -16,6 +16,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"os"
 	"time"
@@ -57,12 +58,13 @@ func main() {
 	}
 
 	roleID := roleResponse.Role.ID
-	log.Printf("Successfully created role.\n\tID: %v\n", roleID)
+	fmt.Println("Successfully created role.")
+	fmt.Println("\tID:", roleID)
 
 	// Delete the role
 	_, err = client.Roles().Delete(ctx, roleID)
 	if err != nil {
 		log.Fatalf("Could not delete role: %v", err)
 	}
-	log.Println("Successfully deleted role.")
+	fmt.Println("Successfully deleted role.")
 }

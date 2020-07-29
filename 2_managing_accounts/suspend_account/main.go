@@ -16,6 +16,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"os"
 	"time"
@@ -57,7 +58,8 @@ func main() {
 	}
 
 	id := createResponse.Account.GetID()
-	log.Printf("Successfully created user.\n\tID: %v\n", id)
+	fmt.Println("Successfully created user.")
+	fmt.Println("\tID:", id)
 
 	// Load the account to update
 	getResponse, err := client.Accounts().Get(ctx, id)
@@ -75,7 +77,7 @@ func main() {
 		log.Fatalf("Could not update account: %v", err)
 	}
 
-	log.Println("Successfully suspended account.")
-	log.Println("\tID:", updateResponse.Account.GetID())
-	log.Println("\tSuspended:", updateResponse.Account.IsSuspended())
+	fmt.Println("Successfully suspended account.")
+	fmt.Println("\tID:", updateResponse.Account.GetID())
+	fmt.Println("\tSuspended:", updateResponse.Account.IsSuspended())
 }

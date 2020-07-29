@@ -16,6 +16,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"os"
 	"time"
@@ -57,7 +58,8 @@ func main() {
 	}
 
 	roleID := createResponse.Role.ID
-	log.Printf("Successfully created role.\n\tID: %v\n", roleID)
+	fmt.Println("Successfully created role.")
+	fmt.Println("\tID:", roleID)
 
 	// Get the role
 	getResponse, err := client.Roles().Get(ctx, roleID)
@@ -74,8 +76,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("Could not update role: %v", err)
 	}
-
-	log.Println("Successfully updated role.")
-	log.Println("\tID:", updateResponse.Role.ID)
-	log.Println("\tName:", updateResponse.Role.Name)
+	fmt.Println("Successfully updated role.")
+	fmt.Println("\tID:", updateResponse.Role.ID)
+	fmt.Println("\tName:", updateResponse.Role.Name)
 }
