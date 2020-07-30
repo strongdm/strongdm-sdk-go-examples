@@ -61,7 +61,7 @@ func main() {
 		log.Fatalf("Could not create SSH server: %v", err)
 	}
 
-	fmt.Println("Successfully created Postgres datasource.")
+	fmt.Println("Successfully created SSH server.")
 	fmt.Println("\tID:", createResponse.Resource.GetID())
 	fmt.Println("\tName:", createResponse.Resource.GetName())
 }

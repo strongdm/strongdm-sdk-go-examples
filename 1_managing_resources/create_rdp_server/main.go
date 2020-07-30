@@ -63,7 +63,7 @@ func main() {
 		log.Fatalf("Could not create RDP server: %v", err)
 	}
 
-	fmt.Println("Successfully created Postgres datasource.")
+	fmt.Println("Successfully created RDP server.")
 	fmt.Println("\tID:", createResponse.Resource.GetID())
 	fmt.Println("\tName:", createResponse.Resource.GetName())
 }

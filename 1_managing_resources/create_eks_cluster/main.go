@@ -84,7 +84,7 @@ JrXnKV7Z4r9uWg==
 		log.Fatalf("Could not create EKS Cluster: %v", err)
 	}
 
-	fmt.Println("Successfully created Postgres datasource.")
+	fmt.Println("Successfully created EKS cluster.")
 	fmt.Println("\tID:", createResponse.Resource.GetID())
 	fmt.Println("\tName:", createResponse.Resource.GetName())
 }
