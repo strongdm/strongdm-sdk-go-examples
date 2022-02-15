@@ -18,13 +18,15 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"math/rand"
 	"os"
 	"time"
 
-	sdm "github.com/strongdm/strongdm-sdk-go"
+	sdm "github.com/strongdm/web/pkg/api/v1/generated/go"
 )
 
 func main() {
+	log.SetFlags(0)
 	//	Load the SDM API keys from the environment.
 	//	If these values are not set in your environment,
 	//	please follow the documentation here:
@@ -36,109 +38,79 @@ func main() {
 	}
 
 	// Create the client
-	client, err := sdm.New(
-		accessKey,
-		secretKey,
-	)
+	client, err := sdm.New(accessKey, secretKey)
 	if err != nil {
-		log.Fatalf("could not create client: %v", err)
+		log.Fatal("failed to create strongDM client:", err)
 	}
 
+	// Create a resource (e.g., Redis)
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
+	
+	redisID := createExampleResource(ctx, client)
 
-	// Create a datasource
-	examplePostgresDatasource := &sdm.Postgres{
-		Name:             "Example Postgres Datasource",
-		Hostname:         "example.strongdm.com",
-		Port:             5432,
-		Username:         "example",
-		Password:         "example",
-		Database:         "example",
-		OverrideDatabase: true,
-		PortOverride:     19999,
-	}
-
-	resourceResponse, err := client.Resources().Create(ctx, examplePostgresDatasource)
-	if err != nil {
-		log.Fatalf("Could not create Postgres datasource: %v", err)
-	}
-
-	resourceID := resourceResponse.Resource.GetID()
-	fmt.Println("Successfully created Postgres datasource.")
-	fmt.Println("\tID:", resourceID)
-
-	// Create a role
+	// Create a Role with initial Access Rule
 	role := &sdm.Role{
-		Name: "example role",
+		Name: "accessRulesTestRole",
+		AccessRules: sdm.AccessRules{
+			sdm.AccessRule{
+				IDs: []string{redisID},
+			},
+		},
 	}
-
-	roleResponse, err := client.Roles().Create(ctx, role)
+	roleResp, err := client.Roles().Create(ctx, role)
 	if err != nil {
-		log.Fatalf("Could not create role: %v", err)
+		log.Fatalf("failed to create role: %v", err)
 	}
+	role = roleResp.Role
 
-	roleID := roleResponse.Role.ID
-	fmt.Println("Successfully created role.")
-	fmt.Println("\tID:", roleID)
+	// The RoleGrants API has been deprecated in favor of Access Rules.
+	// When using Access Rules the best practice is to grant Resources access based on Type and Tags.
+	// If it is _necessary_ to grant access to specific Resources in the same way as RoleGrants did,
+	// you can use Resource IDs directly in Access Rules as shown in the following example.
 
-	// Create a role grant
-	grant := &sdm.RoleGrant{
-		ResourceID: resourceID,
-		RoleID:     roleID,
-	}
-
-	grantResponse, err := client.RoleGrants().Create(ctx, grant)
+	err = deleteRoleGrantViaAccessRulesExample(ctx, client)
 	if err != nil {
-		log.Fatalf("Could not create account grant: %v", err)
+		log.Fatalf("error in deleteRoleGrantViaAccessRulesExample: %v", err)
 	}
-
-	grantID := grantResponse.RoleGrant.ID
-	fmt.Println("Successfully created role grant.")
-	fmt.Println("\tID:", grantID)
-
-	// Create a user
-	user := &sdm.User{
-		Email:     "example@example.com",
-		FirstName: "example",
-		LastName:  "example",
-	}
-
-	accountResponse, err := client.Accounts().Create(ctx, user)
-	if err != nil {
-		log.Fatalf("Could not create user: %v", err)
-	}
-
-	accountID := accountResponse.Account.GetID()
-	fmt.Println("Successfully created user.")
-	fmt.Println("\tID:", accountID)
-
-	// Assign account to role
-	attachment := &sdm.AccountAttachment{
-		AccountID: accountID,
-		RoleID:    roleID,
-	}
-
-	attachmentResponse, err := client.AccountAttachments().Create(ctx, attachment)
-	if err != nil {
-		log.Fatalf("Could not create account attachment: %v", err)
-	}
-
-	attachmentID := attachmentResponse.AccountAttachment.ID
-	fmt.Println("Successfully created account attachment.")
-	fmt.Println("\tID:", attachmentID)
-
-	// Detatch user from role
-	_, err = client.AccountAttachments().Delete(ctx, attachmentID)
-	if err != nil {
-		log.Fatalf("Could not delete account attachment: %v", err)
-	}
-	fmt.Println("Successfully deleted account attachment.")
-
-	// Delete grant from role
-	_, err = client.RoleGrants().Delete(ctx, grantID)
-	if err != nil {
-		log.Fatalf("Could not delete role grant: %v", err)
-	}
-	fmt.Println("Successfully deleted role grant.")
 }
+
+// Example: Delete Role grant via Access Rules
+func deleteRoleGrantViaAccessRulesExample(ctx context.Context, client *sdm.Client) error {
+	// Create example resources
+	resourceID1 := createExampleResource(ctx, client)
+	resourceID2 := createExampleResource(ctx, client)
+	roleID := createExampleRole(ctx, client, sdm.AccessRules{
+		sdm.AccessRule{
+			IDs: []string{resourceID1, resourceID2},
+		},
+	})
+
+	// Get the Role
+	getResp, err := client.Roles().Get(ctx, roleID)
+	if err != nil {
+		return fmt.Errorf("error getting role: %v", err)
+	}
+	role := getResp.Role
+
+	if len(role.AccessRules) != 1 || len(role.AccessRules[0].IDs) == 0 {
+		return fmt.Errorf("unexpected access rules in role")
+	}
+
+	// Remove the ID of the second resource
+	for i, r := range role.AccessRules[0].IDs {
+		if r == resourceID2 {
+			role.AccessRules[0].IDs = removeElement(role.AccessRules[0].IDs, i)
+			break
+		}
+	}
+
+	// Update the Role
+	_, err = client.Roles().Update(ctx, role)
+	if err != nil {
+		return fmt.Errorf("error updating role: %v", err)
+	}
+	return nil
+}
+
+

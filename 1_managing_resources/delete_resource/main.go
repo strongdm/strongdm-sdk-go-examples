@@ -18,13 +18,15 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"math/rand"
 	"os"
 	"time"
 
-	sdm "github.com/strongdm/strongdm-sdk-go"
+	sdm "github.com/strongdm/web/pkg/api/v1/generated/go"
 )
 
 func main() {
+	log.SetFlags(0)
 	//	Load the SDM API keys from the environment.
 	//	If these values are not set in your environment,
 	//	please follow the documentation here:
@@ -41,7 +43,7 @@ func main() {
 		secretKey,
 	)
 	if err != nil {
-		log.Fatalf("could not create client: %v", err)
+		log.Fatal("failed to create strongDM client:", err)
 	}
 
 	// Define the datasource

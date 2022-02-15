@@ -18,13 +18,15 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"math/rand"
 	"os"
 	"time"
 
-	sdm "github.com/strongdm/strongdm-sdk-go"
+	sdm "github.com/strongdm/web/pkg/api/v1/generated/go"
 )
 
 func main() {
+	log.SetFlags(0)
 	//	Load the SDM API keys from the environment.
 	//	If these values are not set in your environment,
 	//	please follow the documentation here:
@@ -41,18 +43,55 @@ func main() {
 		secretKey,
 	)
 	if err != nil {
-		log.Fatalf("could not create client: %v", err)
+		log.Fatal("failed to create strongDM client:", err)
 	}
-
+	
+	// Create a resource (e.g., Redis)
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
+	
+	redisID := createExampleResource(ctx, client)
 
-	// Create a user
+	// Create a Role with initial Access Rule
+	role := &sdm.Role{
+		Name: "accessRulesTestRole",
+		AccessRules: sdm.AccessRules{
+			sdm.AccessRule{
+				IDs: []string{redisID},
+			},
+		},
+	}
+	roleResp, err := client.Roles().Create(ctx, role)
+	if err != nil {
+		log.Fatalf("failed to create role: %v", err)
+	}
+	role = roleResp.Role
+
+	// Update Access Rules
+	role.AccessRules = sdm.AccessRules{
+		sdm.AccessRule{
+			Tags: sdm.Tags{
+				"env": "staging",
+			},
+		},
+		sdm.AccessRule{
+			Type: "postgres",
+		},
+	}
+	_, err = client.Roles().Update(ctx, role)
+	if err != nil {
+		log.Fatalf("failed to update role: %v", err)
+	}
+
+	// Create a User
 	user := &sdm.User{
 		Email:     "example@example.com",
 		FirstName: "example",
 		LastName:  "example",
 	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
 
 	accountResponse, err := client.Accounts().Create(ctx, user)
 	if err != nil {
@@ -63,21 +102,7 @@ func main() {
 	fmt.Println("Successfully created user.")
 	fmt.Println("\tID:", accountID)
 
-	// Create a role
-	role := &sdm.Role{
-		Name: "example role",
-	}
-
-	roleResponse, err := client.Roles().Create(ctx, role)
-	if err != nil {
-		log.Fatalf("Could not create role: %v", err)
-	}
-
-	roleID := roleResponse.Role.ID
-	fmt.Println("Successfully created role.")
-	fmt.Println("\tID:", roleID)
-
-	// Assign account to role
+	// Assign the User or Service Account to Role
 	attachment := &sdm.AccountAttachment{
 		AccountID: accountID,
 		RoleID:    roleID,
