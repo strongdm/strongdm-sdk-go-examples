@@ -47,6 +47,7 @@ func main() {
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
+	// Create the Gateway
 	create := &sdm.Gateway{
 		Name:          "example-gateway",
 		ListenAddress: "gateway.example.com:5555",
@@ -63,7 +64,7 @@ func main() {
 	fmt.Println("\tID:", id)
 	fmt.Println("\tToken:", token)
 
-	// Get the gateway
+	// Get the Gateway
 	getResponse, err := client.Nodes().Get(ctx, id)
 	if err != nil {
 		log.Fatalf("Could not get gateway: %v", err)
@@ -77,7 +78,7 @@ func main() {
 	}
 	gateway.Name = "example-gateway-updated"
 
-	// Update the gateway
+	// Update the Gateway
 	updateResponse, err := client.Nodes().Update(ctx, gateway)
 	if err != nil {
 		log.Fatalf("Could not update gateway: %v", err)

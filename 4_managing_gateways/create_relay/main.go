@@ -47,6 +47,7 @@ func main() {
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
+	// Create the Relay
 	relay := &sdm.Relay{
 		Name: "example-relay",
 	}

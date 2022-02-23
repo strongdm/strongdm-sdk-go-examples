@@ -18,13 +18,15 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"math/rand"
 	"os"
 	"time"
 
-	sdm "github.com/strongdm/strongdm-sdk-go"
+	sdm "github.com/strongdm/web/pkg/api/v1/generated/go"
 )
 
 func main() {
+	log.SetFlags(0)
 	//	Load the SDM API keys from the environment.
 	//	If these values are not set in your environment,
 	//	please follow the documentation here:
@@ -35,14 +37,16 @@ func main() {
 		log.Fatal("SDM_API_ACCESS_KEY and SDM_API_SECRET_KEY must be provided")
 	}
 
+	// Create the client
 	client, err := sdm.New(
 		accessKey,
 		secretKey,
 	)
 	if err != nil {
-		log.Fatalf("could not create client: %v", err)
+		log.Fatal("failed to create strongDM client:", err)
 	}
 
+	// Create a Service Account
 	service := &sdm.Service{
 		Name: "Example Service Account",
 	}

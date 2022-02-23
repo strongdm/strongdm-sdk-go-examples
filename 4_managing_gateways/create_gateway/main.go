@@ -44,6 +44,7 @@ func main() {
 		log.Fatalf("could not create client: %v", err)
 	}
 
+	// Create the Gateway
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 

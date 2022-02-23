@@ -50,6 +50,7 @@ func main() {
 		Hostname: "203.0.113.23",
 		Username: "example",
 		Port:     22,
+		Tags:	  "example=example",
 	}
 
 	// Create the server

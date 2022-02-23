@@ -44,7 +44,7 @@ func main() {
 		log.Fatalf("could not create client: %v", err)
 	}
 
-	// Define the Postgres datasource
+	// Define the Postgres Datasource
 	examplePostgresDatasource := &sdm.Postgres{
 		Name:         "Example Postgres Datasource",
 		Hostname:     "example.strongdm.com",
@@ -53,9 +53,10 @@ func main() {
 		Password:     "example",
 		Database:     "example",
 		PortOverride: 19999,
+		Tags:		  "example=example",
 	}
 
-	// Create the datasource
+	// Create the Datasource
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
@@ -70,7 +71,7 @@ func main() {
 	fmt.Println("\tID:", id)
 	fmt.Println("\tName:", createResponse.Resource.GetName())
 
-	// Load the datasource to update
+	// Load the Datasource to update
 	getResponse, err := client.Resources().Get(ctx, id)
 	if err != nil {
 		log.Fatalf("Could not read Postgres datasource: %v", err)
@@ -80,7 +81,7 @@ func main() {
 	// Update the fields to change
 	updatedPostgresDatasource.SetName("Example Name Updated")
 
-	// Update the datasource
+	// Update the Datasource
 	updateResponse, err := client.Resources().Update(ctx, updatedPostgresDatasource)
 	if err != nil {
 		log.Fatalf("Could not update Postgres datasource: %v", err)

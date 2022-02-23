@@ -44,7 +44,7 @@ func main() {
 		log.Fatalf("could not create client: %v", err)
 	}
 
-	// Define the datasource
+	// Define the Datasource
 	examplePostgresDatasource := &sdm.Postgres{
 		Name:         "Example Postgres Datasource",
 		Hostname:     "example.strongdm.com",
@@ -53,12 +53,13 @@ func main() {
 		Password:     "example",
 		Database:     "example",
 		PortOverride: 19999,
+		Tags:		  "example=example",
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
-	// Create  the datasource
+	// Create the Datasource
 	createResponse, err := client.Resources().Create(ctx, examplePostgresDatasource)
 	if err != nil {
 		log.Fatalf("Could not create Postgres datasource: %v", err)
