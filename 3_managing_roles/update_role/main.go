@@ -46,7 +46,7 @@ func main() {
 		log.Fatal("failed to create strongDM client:", err)
 	}
 
-	// Create a resource (e.g., Redis)
+	// Create a Resource (e.g., Redis)
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 	
@@ -83,10 +83,10 @@ func main() {
 		log.Fatalf("failed to update role: %v", err)
 	}
 
-	// The RoleGrants API has been deprecated in favor of Access Rules.
-	// When using Access Rules, the best practice is to grant resources access based on type and tags.
-	// If it is _necessary_ to grant access to specific resources in the same way as RoleGrants did,
-	// you can use resource IDs directly in Access Rules as shown in the following examples.
+	// The Role Grants API has been deprecated in favor of Access Rules.
+	// When using Access Rules, the best practice is to give Roles access to Resources based on type and tags.
+	// If it is _necessary_ to grant access to specific resources in the same way as Role Grants did,
+	// you can use Resource IDs directly in Access Rules as shown in the following examples.
 
 	err = createRoleGrantViaAccessRulesExample(ctx, client)
 	if err != nil {
@@ -164,7 +164,7 @@ func createRoleGrantViaAccessRulesExample(ctx context.Context, client *sdm.Clien
 
 // Example: Delete Role grant via Access Rules
 func deleteRoleGrantViaAccessRulesExample(ctx context.Context, client *sdm.Client) error {
-	// Create example resources
+	// Create example Resources
 	resourceID1 := createExampleResource(ctx, client)
 	resourceID2 := createExampleResource(ctx, client)
 	roleID := createExampleRole(ctx, client, sdm.AccessRules{
@@ -184,7 +184,7 @@ func deleteRoleGrantViaAccessRulesExample(ctx context.Context, client *sdm.Clien
 		return fmt.Errorf("unexpected access rules in role")
 	}
 
-	// Remove the ID of the second resource
+	// Remove the ID of the second Resource
 	for i, r := range role.AccessRules[0].IDs {
 		if r == resourceID2 {
 			role.AccessRules[0].IDs = removeElement(role.AccessRules[0].IDs, i)
@@ -202,7 +202,7 @@ func deleteRoleGrantViaAccessRulesExample(ctx context.Context, client *sdm.Clien
 
 // Example: List Role grants via Access Rules
 func listRoleGrantsViaAccessRulesExample(ctx context.Context, client *sdm.Client) error {
-	// Create example resources
+	// Create example Resources
 	resourceID := createExampleResource(ctx, client)
 	roleID := createExampleRole(ctx, client, sdm.AccessRules{
 		sdm.AccessRule{

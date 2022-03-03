@@ -53,7 +53,7 @@ func main() {
 		Password:     "example",
 		Database:     "example",
 		PortOverride: 19999,
-		Tags:		  "example=example",
+		Tags:		  "example=example"
 	}
 
 	// Create the Datasource

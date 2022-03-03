@@ -46,7 +46,7 @@ func main() {
 			log.Fatal("failed to create strongDM client:", err)
 		}
 
-	// Create a resource (e.g., Redis)
+	// Create a Resource (e.g., Redis)
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 	
