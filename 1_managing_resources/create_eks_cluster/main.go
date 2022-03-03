@@ -73,7 +73,7 @@ JrXnKV7Z4r9uWg==
 		ClusterName:          "example",
 		RoleArn:              "arn:aws:iam::000000000000:role/RoleName",
 		HealthcheckNamespace: "default",
-		Tags:				  "example=example",
+		Tags:				  "example=example"
 	}
 
 	// Create the cluster
