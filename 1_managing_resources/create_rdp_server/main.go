@@ -52,7 +52,7 @@ func main() {
 		Password:     "example",
 		Port:         3389,
 		PortOverride: 19999,
-		Tags:		  "example=example"
+		Tags:         "example=example",
 	}
 
 	// Create the server

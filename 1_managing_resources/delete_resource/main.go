@@ -53,7 +53,7 @@ func main() {
 		Password:     "example",
 		Database:     "example",
 		PortOverride: 19999,
-		Tags:		  "example=example"
+		Tags:         "example=example",
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
