@@ -21,7 +21,7 @@ import (
 	"os"
 	"time"
 
-	sdm "github.com/strongdm/strongdm-sdk-go"
+	sdm "github.com/strongdm/strongdm-sdk-go/v2"
 )
 
 func main() {
@@ -49,7 +49,7 @@ func main() {
 
 	// Create the Gateway
 	create := &sdm.Gateway{
-		Name:          "example-gateway",
+		Name:          "gateway-for-delete-example",
 		ListenAddress: "gateway.example.com:5555",
 	}
 

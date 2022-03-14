@@ -18,11 +18,10 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"math/rand"
 	"os"
 	"time"
 
-	sdm "github.com/strongdm/web/pkg/api/v1/generated/go"
+	sdm "github.com/strongdm/strongdm-sdk-go/v2"
 )
 
 func main() {
@@ -48,7 +47,7 @@ func main() {
 
 	// Create a User
 	user := &sdm.User{
-		Email:     "example@example.com",
+		Email:     "suspend-account@example.com",
 		FirstName: "example",
 		LastName:  "example",
 	}
@@ -60,17 +59,11 @@ func main() {
 	if err != nil {
 		log.Fatalf("Could not create user: %v", err)
 	}
+	account := createResponse.Account
 
-	id := createResponse.Account.GetID()
+	id := account.GetID()
 	fmt.Println("Successfully created user.")
 	fmt.Println("\tID:", id)
-
-	// Load the account to update
-	getResponse, err := client.Accounts().Get(ctx, id)
-	if err != nil {
-		log.Fatalf("Could not get account: %v", err)
-	}
-	account := getResponse.Account
 
 	// Set the fields to change
 	account.SetSuspended(true)

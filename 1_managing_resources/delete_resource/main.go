@@ -21,7 +21,7 @@ import (
 	"os"
 	"time"
 
-	sdm "github.com/strongdm/strongdm-sdk-go"
+	sdm "github.com/strongdm/strongdm-sdk-go/v2"
 )
 
 func main() {
@@ -46,14 +46,16 @@ func main() {
 
 	// Define the Datasource
 	examplePostgresDatasource := &sdm.Postgres{
-		Name:         "Example Postgres Datasource",
+		Name:         "Example Postgres Datasource for Delete",
 		Hostname:     "example.strongdm.com",
 		Port:         5432,
 		Username:     "example",
 		Password:     "example",
 		Database:     "example",
-		PortOverride: 19999,
-		Tags:         "example=example",
+		PortOverride: 19201,
+		Tags: sdm.Tags{
+			"example": "example",
+		},
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)

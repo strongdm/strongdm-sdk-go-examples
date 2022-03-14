@@ -18,11 +18,10 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"math/rand"
 	"os"
 	"time"
 
-	sdm "github.com/strongdm/web/pkg/api/v1/generated/go"
+	sdm "github.com/strongdm/strongdm-sdk-go/v2"
 )
 
 func main() {
@@ -48,7 +47,7 @@ func main() {
 
 	// Create a User
 	user := &sdm.User{
-		Email:     "example@example.com",
+		Email:     "create-user@example.com",
 		FirstName: "example",
 		LastName:  "example",
 	}
