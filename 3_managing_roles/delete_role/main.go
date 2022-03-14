@@ -18,11 +18,10 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"math/rand"
 	"os"
 	"time"
 
-	sdm "github.com/strongdm/web/pkg/api/v1/generated/go"
+	sdm "github.com/strongdm/strongdm-sdk-go/v2"
 )
 
 func main() {
@@ -46,20 +45,12 @@ func main() {
 		log.Fatal("failed to create strongDM client:", err)
 	}
 
-	// Create a Resource (e.g., Redis)
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
-	
-	redisID := createExampleResource(ctx, client)
 
 	// Create a Role with initial Access Rule
 	role := &sdm.Role{
-		Name: "accessRulesTestRole",
-		AccessRules: sdm.AccessRules{
-			sdm.AccessRule{
-				IDs: []string{redisID},
-			},
-		},
+		Name: "DeleteRoleTest",
 	}
 	roleResp, err := client.Roles().Create(ctx, role)
 	if err != nil {
@@ -68,7 +59,7 @@ func main() {
 	role = roleResp.Role
 
 	// Delete the Role
-	_, err = client.Roles().Delete(ctx, roleID)
+	_, err = client.Roles().Delete(ctx, role.ID)
 	if err != nil {
 		log.Fatalf("failed to delete role: %v", err)
 	}

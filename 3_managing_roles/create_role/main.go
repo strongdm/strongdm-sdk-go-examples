@@ -16,13 +16,11 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"log"
-	"math/rand"
 	"os"
 	"time"
 
-	sdm "github.com/strongdm/web/pkg/api/v1/generated/go"
+	sdm "github.com/strongdm/strongdm-sdk-go/v2"
 )
 
 func main() {
@@ -37,33 +35,31 @@ func main() {
 		log.Fatal("SDM_API_ACCESS_KEY and SDM_API_SECRET_KEY must be provided")
 	}
 
-		// Create the client
-		client, err := sdm.New(
-			accessKey,
-			secretKey,
-		)
-		if err != nil {
-			log.Fatal("failed to create strongDM client:", err)
-		}
+	// Create the client
+	client, err := sdm.New(
+		accessKey,
+		secretKey,
+	)
+	if err != nil {
+		log.Fatal("failed to create strongDM client:", err)
+	}
 
-	// Create a Resource (e.g., Redis)
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
-	
-	redisID := createExampleResource(ctx, client)
 
 	// Create a Role with initial Access Rule
 	role := &sdm.Role{
-		Name: "accessRulesTestRole",
+		Name: "CreateRoleTest",
 		AccessRules: sdm.AccessRules{
 			sdm.AccessRule{
-				IDs: []string{redisID},
+				Tags: sdm.Tags{
+					"env": "dev",
+				},
 			},
 		},
 	}
-	roleResp, err := client.Roles().Create(ctx, role)
+	_, err = client.Roles().Create(ctx, role)
 	if err != nil {
 		log.Fatalf("failed to create role: %v", err)
 	}
-	role = roleResp.Role
 }

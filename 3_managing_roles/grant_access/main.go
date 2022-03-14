@@ -18,11 +18,10 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"math/rand"
 	"os"
 	"time"
 
-	sdm "github.com/strongdm/web/pkg/api/v1/generated/go"
+	sdm "github.com/strongdm/strongdm-sdk-go/v2"
 )
 
 func main() {
@@ -46,18 +45,47 @@ func main() {
 		log.Fatal("failed to create strongDM client:", err)
 	}
 
-	// Create a Resource (e.g., Redis)
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
-	
-	redisID := createExampleResource(ctx, client)
+
+	// Create a User
+	user := &sdm.User{
+		Email:     "grant-access@example.com",
+		FirstName: "example",
+		LastName:  "example",
+	}
+	accountResponse, err := client.Accounts().Create(ctx, user)
+	if err != nil {
+		log.Fatalf("Could not create user: %v", err)
+	}
+	account := accountResponse.Account
+	fmt.Println("Successfully created user.")
+	fmt.Println("\tID:", account.GetID())
+
+	// Create a Resource (e.g., Redis)
+	redisResp, err := client.Resources().Create(ctx, &sdm.Redis{
+		Name:         "Redis for Grant Access Test",
+		Hostname:     "example.com",
+		PortOverride: 19203,
+		Tags: sdm.Tags{
+			"example": "grant-access",
+		},
+	})
+	if err != nil {
+		log.Fatalf("failed to create resource: %v", err)
+	}
+	redis := redisResp.Resource
+	fmt.Println("Successfully created resource.")
+	fmt.Println("\tID:", redis.GetID())
 
 	// Create a Role with initial Access Rule
 	role := &sdm.Role{
-		Name: "accessRulesTestRole",
+		Name: "Role for Grant Access Test",
 		AccessRules: sdm.AccessRules{
 			sdm.AccessRule{
-				IDs: []string{redisID},
+				Tags: sdm.Tags{
+					"example": "grant-access",
+				},
 			},
 		},
 	}
@@ -66,27 +94,13 @@ func main() {
 		log.Fatalf("failed to create role: %v", err)
 	}
 	role = roleResp.Role
-
-	// Update Access Rules
-	role.AccessRules = sdm.AccessRules{
-		sdm.AccessRule{
-			Tags: sdm.Tags{
-				"env": "staging",
-			},
-		},
-		sdm.AccessRule{
-			Type: "postgres",
-		},
-	}
-	_, err = client.Roles().Update(ctx, role)
-	if err != nil {
-		log.Fatalf("failed to update role: %v", err)
-	}
+	fmt.Println("Successfully created role.")
+	fmt.Println("\tID:", role.ID)
 
 	// Assign account to role
 	attachment := &sdm.AccountAttachment{
-		AccountID: accountID,
-		RoleID:    roleID,
+		AccountID: account.GetID(),
+		RoleID:    role.ID,
 	}
 
 	attachmentResponse, err := client.AccountAttachments().Create(ctx, attachment)
@@ -97,111 +111,4 @@ func main() {
 	attachmentID := attachmentResponse.AccountAttachment.ID
 	fmt.Println("Successfully created account attachment.")
 	fmt.Println("\tID:", attachmentID)
-	
-	// The Role Grants API has been deprecated in favor of Access Rules.
-	// When using Access Rules, the best practice is to give Roles access to Resources based on type and tags.
-	// If it is _necessary_ to grant access to specific Resources in the same way as Role Grants did,
-	// you can use Resource IDs directly in Access Rules as shown in the following examples.
-
-	err = createRoleGrantViaAccessRulesExample(ctx, client)
-	if err != nil {
-		log.Fatalf("error in createRoleGrantViaAccessRulesExample: %v", err)
-	}
-	err = deleteRoleGrantViaAccessRulesExample(ctx, client)
-	if err != nil {
-		log.Fatalf("error in deleteRoleGrantViaAccessRulesExample: %v", err)
-	}
-	err = listRoleGrantsViaAccessRulesExample(ctx, client)
-	if err != nil {
-		log.Fatalf("error in listRoleGrantsViaAccessRulesExample: %v", err)
-	}
-}
-
-// Example: Create a Role with empty Access Rules and return the ID
-func createExampleRole(ctx context.Context, client *sdm.Client, ar sdm.AccessRules) string {
-	role := &sdm.Role{
-		Name:        "exampleRole-" + fmt.Sprint(rand.Int()),
-		AccessRules: ar,
-	}
-	roleResp, err := client.Roles().Create(ctx, role)
-	if err != nil {
-		log.Fatalf("error creating role: %v", err)
-	}
-	return roleResp.Role.ID
-}
-
-// Example: Create a sample Resource and return the ID
-func createExampleResource(ctx context.Context, client *sdm.Client) string {
-	redis := &sdm.Redis{
-		Name:         "exampleResource-" + fmt.Sprint(rand.Int()),
-		Hostname:     "example.com",
-		Port:         6379,
-		PortOverride: int32(rand.Intn(20000) + 3000),
-	}
-	resp, err := client.Resources().Create(ctx, redis)
-	if err != nil {
-		log.Fatalf("error creating resource: %v", err)
-	}
-	return resp.Resource.GetID()
-}
-
-// Example: Create a Role grant via Access Rules
-func createRoleGrantViaAccessRulesExample(ctx context.Context, client *sdm.Client) error {
-	// Create example Resources
-	resourceID1 := createExampleResource(ctx, client)
-	resourceID2 := createExampleResource(ctx, client)
-	roleID := createExampleRole(ctx, client, sdm.AccessRules{
-		sdm.AccessRule{
-			IDs: []string{resourceID1},
-		},
-	})
-
-	// Get the Role
-	getResp, err := client.Roles().Get(ctx, roleID)
-	if err != nil {
-		return fmt.Errorf("error getting role: %v", err)
-	}
-	role := getResp.Role
-
-	// Append the ID to an existing static Access Rule
-	if len(role.AccessRules) != 1 || len(role.AccessRules[0].IDs) == 0 {
-		return fmt.Errorf("unexpected access rules in role")
-	}
-	role.AccessRules[0].IDs = append(role.AccessRules[0].IDs, resourceID2)
-
-	// Update the Role
-	_, err = client.Roles().Update(ctx, role)
-	if err != nil {
-		return fmt.Errorf("error updating role: %v", err)
-	}
-	return nil
-}
-
-// Example: List Role grants via Access Rules
-func listRoleGrantsViaAccessRulesExample(ctx context.Context, client *sdm.Client) error {
-	// Create example Resources
-	resourceID := createExampleResource(ctx, client)
-	roleID := createExampleRole(ctx, client, sdm.AccessRules{
-		sdm.AccessRule{
-			IDs: []string{resourceID},
-		},
-	})
-
-	// Get the Role
-	getResp, err := client.Roles().Get(ctx, roleID)
-	if err != nil {
-		return fmt.Errorf("error getting role: %v", err)
-	}
-	role := getResp.Role
-
-	// role.AccessRules contains each AccessRule associated with the Role
-	for _, resourceID := range role.AccessRules[0].IDs {
-		fmt.Println(resourceID)
-	}
-
-	return nil
-}
-
-func removeElement(slice []string, s int) []string {
-	return append(slice[:s], slice[s+1:]...)
 }

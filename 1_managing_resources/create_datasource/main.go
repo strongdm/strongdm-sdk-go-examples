@@ -21,7 +21,7 @@ import (
 	"os"
 	"time"
 
-	sdm "github.com/strongdm/strongdm-sdk-go"
+	sdm "github.com/strongdm/strongdm-sdk-go/v2"
 )
 
 func main() {
@@ -53,7 +53,9 @@ func main() {
 		Password:     "example",
 		Database:     "example",
 		PortOverride: 19999,
-		Tags:         "example=example",
+		Tags: sdm.Tags{
+			"example": "example",
+		},
 	}
 
 	// Create the Datasource

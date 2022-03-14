@@ -18,11 +18,10 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"math/rand"
 	"os"
 	"time"
 
-	sdm "github.com/strongdm/web/pkg/api/v1/generated/go"
+	sdm "github.com/strongdm/strongdm-sdk-go/v2"
 )
 
 func main() {
@@ -51,11 +50,10 @@ func main() {
 
 	// Create a User
 	user := &sdm.User{
-		Email:     "example@example.com",
+		Email:     "assign-account@example.com",
 		FirstName: "example",
 		LastName:  "example",
 	}
-
 	accountResponse, err := client.Accounts().Create(ctx, user)
 	if err != nil {
 		log.Fatalf("Could not create user: %v", err)
@@ -65,38 +63,27 @@ func main() {
 	fmt.Println("Successfully created user.")
 	fmt.Println("\tID:", accountID)
 
-	// Create a resource (e.g., Redis)
-	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
-	defer cancel()
-	
-	redisID := createExampleResource(ctx, client)
-
-	// Create a Role with initial Access Rule
+	// Create a Role
 	role := &sdm.Role{
-		Name: "accessRulesTestRole",
-		AccessRules: sdm.AccessRules{
-			sdm.AccessRule{
-				IDs: []string{redisID},
-			},
-		},
+		Name: "TestRoleForAssignment",
 	}
 	roleResp, err := client.Roles().Create(ctx, role)
 	if err != nil {
 		log.Fatalf("failed to create role: %v", err)
 	}
 	role = roleResp.Role
+	fmt.Println("Successfully created role.")
+	fmt.Println("\tID:", role.ID)
 
 	// Assign account to Role
 	attachment := &sdm.AccountAttachment{
 		AccountID: accountID,
-		RoleID:    roleID,
+		RoleID:    role.ID,
 	}
-
 	attachmentResponse, err := client.AccountAttachments().Create(ctx, attachment)
 	if err != nil {
 		log.Fatalf("Could not create account attachment: %v", err)
 	}
-
 	attachmentID := attachmentResponse.AccountAttachment.ID
 	fmt.Println("Successfully created account attachment.")
 	fmt.Println("\tID:", attachmentID)

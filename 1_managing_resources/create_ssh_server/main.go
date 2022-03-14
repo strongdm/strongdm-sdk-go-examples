@@ -21,7 +21,7 @@ import (
 	"os"
 	"time"
 
-	sdm "github.com/strongdm/strongdm-sdk-go"
+	sdm "github.com/strongdm/strongdm-sdk-go/v2"
 )
 
 func main() {
@@ -50,7 +50,9 @@ func main() {
 		Hostname: "203.0.113.23",
 		Username: "example",
 		Port:     22,
-		Tags:	  "example=example",
+		Tags: sdm.Tags{
+			"example": "example",
+		},
 	}
 
 	// Create the server

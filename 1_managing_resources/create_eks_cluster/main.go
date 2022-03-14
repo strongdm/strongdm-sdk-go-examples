@@ -21,7 +21,7 @@ import (
 	"os"
 	"time"
 
-	sdm "github.com/strongdm/strongdm-sdk-go"
+	sdm "github.com/strongdm/strongdm-sdk-go/v2"
 )
 
 func main() {
@@ -73,7 +73,9 @@ JrXnKV7Z4r9uWg==
 		ClusterName:          "example",
 		RoleArn:              "arn:aws:iam::000000000000:role/RoleName",
 		HealthcheckNamespace: "default",
-		Tags:                 "example=example",
+		Tags: sdm.Tags{
+			"example": "example",
+		},
 	}
 
 	// Create the cluster

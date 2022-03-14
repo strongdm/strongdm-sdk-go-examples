@@ -21,7 +21,7 @@ import (
 	"os"
 	"time"
 
-	sdm "github.com/strongdm/strongdm-sdk-go"
+	sdm "github.com/strongdm/strongdm-sdk-go/v2"
 )
 
 func main() {
@@ -46,14 +46,16 @@ func main() {
 
 	// Define the Postgres Datasource
 	examplePostgresDatasource := &sdm.Postgres{
-		Name:         "Example Postgres Datasource",
+		Name:         "Example Postgres Datasource for Update",
 		Hostname:     "example.strongdm.com",
 		Port:         5432,
 		Username:     "example",
 		Password:     "example",
 		Database:     "example",
-		PortOverride: 19999,
-		Tags:         "example=example",
+		PortOverride: 19202,
+		Tags: sdm.Tags{
+			"example": "example",
+		},
 	}
 
 	// Create the Datasource
