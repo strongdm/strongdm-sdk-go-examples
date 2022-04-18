@@ -45,6 +45,7 @@ func main() {
 	}
 
 	// Define the RDP server
+	// Set `PortOverride` to `-1` to auto-generate a port if Port Overrides is enabled.
 	server := &sdm.RDP{
 		Name:         "Example RDP Server",
 		Hostname:     "example.strongdm.com",
