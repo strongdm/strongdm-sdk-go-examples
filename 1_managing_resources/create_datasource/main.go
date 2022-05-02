@@ -45,6 +45,7 @@ func main() {
 	}
 
 	// Define the Postgres Datasource
+	// Set `PortOverride` to `-1` to auto-generate a port if Port Overrides is enabled.
 	datasource := &sdm.Postgres{
 		Name:         "Example Postgres Datasource",
 		Hostname:     "example.strongdm.com",
