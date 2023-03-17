@@ -145,4 +145,14 @@ func exampleResourceDeletion(client *sdm.Client) {
 	if err := history.Err(); err != nil {
 		log.Fatalf("failed to finish resource history: %v", err)
 	}
+
+	//The example snapshot setup prints, as expected:
+
+	//item does not exist: no resource found
+	//example-postgres
+	//example-postgres-renamed
+	//item does not exist: no resource found
+	//API Account [Testing] API Key (ddf09805-538a-4fe2-bbf9-415e6cd1d0b8) created a new postgres datasource named example-postgres.
+	//API Account [Testing] API Key (ddf09805-538a-4fe2-bbf9-415e6cd1d0b8) updated datasource example-postgres-renamed.
+	//API Account [Testing] API Key (ddf09805-538a-4fe2-bbf9-415e6cd1d0b8) deleted datasource example-postgres-renamed.
 }
