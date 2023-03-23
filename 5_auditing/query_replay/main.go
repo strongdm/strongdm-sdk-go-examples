@@ -15,6 +15,7 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"log"
 	"os"
@@ -64,8 +65,17 @@ func main() {
 	}
 	for queries.Next() {
 		q := queries.Value()
-		if q.Replayable {
-			fmt.Printf("Replaying query made at %v\n", q.Timestamp)
+		accountResp, err := client.SnapshotAt(q.Timestamp).Accounts().Get(ctx, q.AccountID)
+		if err != nil {
+			log.Fatalf("failed to get account: %v", err)
+		}
+		user := accountResp.Account.(*sdm.User)
+
+		if q.Encrypted {
+			fmt.Printf("Skipping encrypted query made by %v at %v\n", user.Email, q.Timestamp)
+			fmt.Println("See encrypted_query_replay for an example of query decryption.")
+		} else if q.Replayable {
+			fmt.Printf("Replaying query made by %v at %v\n", user.Email, q.Timestamp)
 			replayParts, err := client.Replays().List(ctx, "id:?", q.ID)
 			if err != nil {
 				log.Fatalf("failed to scan replay: %v", err)
@@ -82,6 +92,13 @@ func main() {
 				log.Fatalf("failed to iterate replay: %v", err)
 			}
 			fmt.Println("")
+		} else {
+			var capture struct{ Command string }
+			if err := json.Unmarshal([]byte(q.QueryBody), &capture); err != nil {
+				fmt.Printf("failed to unmarshal query JSON %v: %v", q.QueryBody, err)
+			} else {
+				fmt.Printf("Command run by %v at %v: %v\n", user.Email, q.Timestamp, capture.Command)
+			}
 		}
 	}
 }
