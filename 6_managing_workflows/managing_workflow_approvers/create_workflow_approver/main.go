@@ -33,8 +33,15 @@ func main() {
 
 	// Create a Workflow
 	workflow := &sdm.Workflow{
-		Name:        "Example Delete Worfklow",
+		Name:        "Example Create Worfklow",
 		Description: "Example Workflow Description",
+		AccessRules: sdm.AccessRules{
+			sdm.AccessRule{
+				Tags: sdm.Tags{
+					"env": "dev",
+				},
+			},
+		},
 	}
 
 	createResponse, err := client.Workflows().Create(ctx, workflow)
@@ -42,12 +49,29 @@ func main() {
 		log.Fatalf("Could not create workflow: %v", err)
 	}
 
-	id := createResponse.Workflow.ID
+	wf := createResponse.Workflow
 
-	// Delete the workflow
-	_, err = client.Workflows().Delete(ctx, id)
+	// Create a approver - used for creating a workflow approver
+	approverCreateResponse, err := client.Accounts().Create(ctx, &sdm.User{
+		Email:     "create-workflow-approver-example@example.com",
+		FirstName: "example",
+		LastName:  "example",
+	})
 	if err != nil {
-		log.Fatalf("Could not delete workflow: %v", err)
+		log.Fatalf("Could not create approver: %v", err)
 	}
-	fmt.Println("Successfully deleted workflow.")
+	approverID := approverCreateResponse.Account.GetID()
+
+	// Create a WorkflowApprover
+	_, err = client.WorkflowApprovers().Create(ctx, &sdm.WorkflowApprover{
+		WorkflowID: wf.ID,
+		ApproverID: approverID,
+	})
+	if err != nil {
+		log.Fatalf("Could not create workflow approver: %v", err)
+	}
+
+	fmt.Println("Successfully created WorkflowApprover.")
+	fmt.Println("\tWorkflow ID:", wf.ID)
+	fmt.Println("\tApprover ID:", approverID)
 }

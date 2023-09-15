@@ -31,10 +31,19 @@ func main() {
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
-	// Create a Workflow
+	// Create an auto grant Workflow with initial Access Rule
 	workflow := &sdm.Workflow{
-		Name:        "Example Delete Worfklow",
+		Name:        "Example Create Auto Grant Worfklow",
 		Description: "Example Workflow Description",
+		AutoGrant:   true,
+		Enabled:     true,
+		AccessRules: sdm.AccessRules{
+			sdm.AccessRule{
+				Tags: sdm.Tags{
+					"env": "dev",
+				},
+			},
+		},
 	}
 
 	createResponse, err := client.Workflows().Create(ctx, workflow)
@@ -42,12 +51,10 @@ func main() {
 		log.Fatalf("Could not create workflow: %v", err)
 	}
 
-	id := createResponse.Workflow.ID
+	workflowID := createResponse.Workflow.ID
+	workflowName := createResponse.Workflow.Name
 
-	// Delete the workflow
-	_, err = client.Workflows().Delete(ctx, id)
-	if err != nil {
-		log.Fatalf("Could not delete workflow: %v", err)
-	}
-	fmt.Println("Successfully deleted workflow.")
+	fmt.Println("Successfully created Workflow.")
+	fmt.Println("\tID:", workflowID)
+	fmt.Println("\tName:", workflowName)
 }

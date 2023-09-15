@@ -33,8 +33,15 @@ func main() {
 
 	// Create a Workflow
 	workflow := &sdm.Workflow{
-		Name:        "Example Delete Worfklow",
+		Name:        "Example Create Worfklow",
 		Description: "Example Workflow Description",
+		AccessRules: sdm.AccessRules{
+			sdm.AccessRule{
+				Tags: sdm.Tags{
+					"env": "dev",
+				},
+			},
+		},
 	}
 
 	createResponse, err := client.Workflows().Create(ctx, workflow)
@@ -42,12 +49,27 @@ func main() {
 		log.Fatalf("Could not create workflow: %v", err)
 	}
 
-	id := createResponse.Workflow.ID
+	wf := createResponse.Workflow
 
-	// Delete the workflow
-	_, err = client.Workflows().Delete(ctx, id)
+	// Create a Role - used for creating a workflow role
+	roleCreateResponse, err := client.Roles().Create(ctx, &sdm.Role{
+		Name: "Example Role for creating WorkflowRole",
+	})
 	if err != nil {
-		log.Fatalf("Could not delete workflow: %v", err)
+		log.Fatalf("Could not create role: %v", err)
 	}
-	fmt.Println("Successfully deleted workflow.")
+	roleID := roleCreateResponse.Role.ID
+
+	// Create a WorkflowRole
+	_, err = client.WorkflowRoles().Create(ctx, &sdm.WorkflowRole{
+		WorkflowID: wf.ID,
+		RoleID:     roleID,
+	})
+	if err != nil {
+		log.Fatalf("Could not create workflow role: %v", err)
+	}
+
+	fmt.Println("Successfully created WorkflowRole.")
+	fmt.Println("\tWorkflow ID:", wf.ID)
+	fmt.Println("\tRole ID:", roleID)
 }

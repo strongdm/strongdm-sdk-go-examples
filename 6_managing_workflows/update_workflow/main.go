@@ -28,14 +28,14 @@ func main() {
 		log.Fatal("failed to create strongDM client:", err)
 	}
 
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+
 	// Create a Workflow
 	workflow := &sdm.Workflow{
 		Name:        "Example Update Worfklow",
 		Description: "Example Workflow Description",
 	}
-
-	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
-	defer cancel()
 
 	createResponse, err := client.Workflows().Create(ctx, workflow)
 	if err != nil {

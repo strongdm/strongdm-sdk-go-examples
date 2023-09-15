@@ -28,14 +28,21 @@ func main() {
 		log.Fatal("failed to create strongDM client:", err)
 	}
 
-	// Create a Workflow
-	workflow := &sdm.Workflow{
-		Name:        "Example Create Worfklow",
-		Description: "Example Workflow Description",
-	}
-
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
+
+	// Create a manual Workflow with initial Access Rule
+	workflow := &sdm.Workflow{
+		Name:        "Full Example Create Manual Worfklow",
+		Description: "Example Workflow Description",
+		AccessRules: sdm.AccessRules{
+			sdm.AccessRule{
+				Tags: sdm.Tags{
+					"env": "dev",
+				},
+			},
+		},
+	}
 
 	createResponse, err := client.Workflows().Create(ctx, workflow)
 	if err != nil {
@@ -43,23 +50,29 @@ func main() {
 	}
 
 	wf := createResponse.Workflow
-	workflowID := createResponse.Workflow.ID
-	workflowName := createResponse.Workflow.Name
+	workflowID := wf.ID
+	workflowName := wf.Name
 
 	fmt.Println("Successfully created Workflow.")
 	fmt.Println("\tID:", workflowID)
 	fmt.Println("\tName:", workflowName)
 
+	// To allow users access to the resources managed by this workflow, you must
+	// add workflow roles to the workflow.
+	// Two steps are needed to add a workflow role:
+	// Step 1: create a Role
+	// Step 2: create a WorkflowRole
+
 	// Create a Role - used for creating a workflow role
 	roleCreateResponse, err := client.Roles().Create(ctx, &sdm.Role{
-		Name: "Example Create Role",
+		Name: "Example Role for Manual Workflow",
 	})
 	if err != nil {
 		log.Fatalf("Could not create role: %v", err)
 	}
 	roleID := roleCreateResponse.Role.ID
 
-	// Create WorkflowRole
+	// Create a WorkflowRole
 	_, err = client.WorkflowRoles().Create(ctx, &sdm.WorkflowRole{
 		WorkflowID: workflowID,
 		RoleID:     roleID,
@@ -72,9 +85,15 @@ func main() {
 	fmt.Println("\tWorkflow ID:", workflowID)
 	fmt.Println("\tRole ID:", roleID)
 
+	// To manually enable this workflow, you must add workflow approvers
+	// to this workflow.
+	// Two steps are needed to add a workflow approver:
+	// Step 1: create an Account
+	// Step 2: create a WorkflowApprover
+
 	// Create a approver - used for creating a workflow approver
 	approverCreateResponse, err := client.Accounts().Create(ctx, &sdm.User{
-		Email:     "create-user@example.com",
+		Email:     "create-workflow-full-example@example.com",
 		FirstName: "example",
 		LastName:  "example",
 	})
@@ -83,7 +102,7 @@ func main() {
 	}
 	approverID := approverCreateResponse.Account.GetID()
 
-	// Create WorkflowApprover
+	// Create a WorkflowApprover
 	_, err = client.WorkflowApprovers().Create(ctx, &sdm.WorkflowApprover{
 		WorkflowID: workflowID,
 		ApproverID: approverID,
@@ -96,45 +115,16 @@ func main() {
 	fmt.Println("\tWorkflow ID:", workflowID)
 	fmt.Println("\tApprover ID:", approverID)
 
-	// Create a resource - used for workflow assignments
-	tags := sdm.Tags{"example": "example"}
-	resourceCreateResponse, err := client.Resources().Create(ctx, &sdm.Mysql{
-		Name:         "Example resource",
-		PortOverride: 19999,
-		Hostname:     "example.strongdm.com",
-		Username:     "example",
-		Password:     "example",
-		Database:     "example",
-		Tags:         tags,
-	})
-	if err != nil {
-		log.Fatalf("Could not create resource: %v", err)
-	}
-	resourceID := resourceCreateResponse.Resource.GetID()
-
-	// Update workflow assignments
-	wf.AccessRules = sdm.AccessRules{
-		sdm.AccessRule{
-			Type: "mysql",
-			Tags: tags,
-		},
-	}
-
-	// Update workflow enabled
+	// You can enable this workflow after adding workflow approvers.
+	// Update Workflow Enabled
 	wf.Enabled = true
-
-	// Update workflow
 	workflowUpdateResponse, err := client.Workflows().Update(ctx, wf)
 	if err != nil {
 		log.Fatalf("Could not update workflow: %v", err)
 	}
-
-	fmt.Println("Successfully updated WorkflowAssignment.")
-	fmt.Println("\tWorkflow ID:", workflowID)
-	fmt.Println("\tResource ID:", resourceID)
+	wf = workflowUpdateResponse.Workflow
 
 	fmt.Println("Successfully updated Workflow Enabled.")
 	fmt.Println("\tWorkflow ID:", workflowID)
-	fmt.Println("\tEnabled:", workflowUpdateResponse.Workflow.Enabled)
-
+	fmt.Println("\tEnabled:", wf.Enabled)
 }

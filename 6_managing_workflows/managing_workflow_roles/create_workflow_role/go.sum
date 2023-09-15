@@ -18,8 +18,6 @@ github.com/google/go-cmp v0.4.0/go.mod h1:v8dTdLbMG2kIc/vJvl+f65V22dbkXbowE6jgT/
 github.com/google/go-cmp v0.5.5/go.mod h1:v8dTdLbMG2kIc/vJvl+f65V22dbkXbowE6jgT/gNBxE=
 github.com/google/uuid v1.1.2/go.mod h1:TIyPZe4MgqvfeYDBFedMoGGpEw/LqOeaOT+nhxU+yHo=
 github.com/prometheus/client_model v0.0.0-20190812154241-14fe0d1b01d4/go.mod h1:xMI15A0UPsDsEKsMN9yxemIoYk6Tm2C1GtYGdfGttqA=
-github.com/strongdm/strongdm-sdk-go/v4 v4.7.0 h1:s1BujyAN1h/d4CwSuKyWY5PITIe8uwtuqFolw2yUaUw=
-github.com/strongdm/strongdm-sdk-go/v4 v4.7.0/go.mod h1:PwM6F/mXGN7KsBc+4q1NPw+vpDp8uTVhrCdg7QWDiDg=
 github.com/strongdm/strongdm-sdk-go/v4 v4.8.0 h1:95WNVtoCoEBahnQ+ngFF3+YhacLVuhD46/Op06qkUJM=
 github.com/strongdm/strongdm-sdk-go/v4 v4.8.0/go.mod h1:PwM6F/mXGN7KsBc+4q1NPw+vpDp8uTVhrCdg7QWDiDg=
 golang.org/x/crypto v0.0.0-20190308221718-c2843e01d9a2/go.mod h1:djNgcEr1/C05ACkg1iLfiJU5Ep61QUkGW8qpdssI0+w=
