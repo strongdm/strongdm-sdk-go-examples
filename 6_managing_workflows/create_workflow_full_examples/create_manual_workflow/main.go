@@ -94,8 +94,8 @@ func main() {
 	// Create a approver - used for creating a workflow approver
 	approverCreateResponse, err := client.Accounts().Create(ctx, &sdm.User{
 		Email:     "create-workflow-full-example@example.com",
-		FirstName: "example",
-		LastName:  "example",
+		FirstName: "Example",
+		LastName:  "Approver",
 	})
 	if err != nil {
 		log.Fatalf("Could not create approver: %v", err)

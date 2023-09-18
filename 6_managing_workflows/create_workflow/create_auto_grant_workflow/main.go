@@ -31,7 +31,8 @@ func main() {
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
-	// Create an auto grant Workflow with initial Access Rule
+	// Create an auto grant Workflow with initial Access Rule. Note that this
+	// workflow will be enabled.
 	workflow := &sdm.Workflow{
 		Name:        "Example Create Auto Grant Worfklow",
 		Description: "Example Workflow Description",

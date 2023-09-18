@@ -31,7 +31,9 @@ func main() {
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
-	// Create a manual Workflow with initial Access Rule
+	// Create a manual Workflow with initial Access Rule. Note that the workflow
+	// will not be enabled by default. See the create_workflow_full_example/
+	// create_manual_workflow example for more.
 	workflow := &sdm.Workflow{
 		Name:        "Example Create Manual Worfklow",
 		Description: "Example Workflow Description",
