@@ -44,26 +44,7 @@ func main() {
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
-	// Create a Workflow
-	workflow := &sdm.Workflow{
-		Name:        "Example Create Worfklow",
-		Description: "Example Workflow Description",
-	}
-
-	createResponse, err := client.Workflows().Create(ctx, workflow)
-	if err != nil {
-		log.Fatalf("Could not create workflow: %v", err)
-	}
-
-	wf := createResponse.Workflow
-	workflowID := wf.ID
-	workflowName := wf.Name
-
-	fmt.Println("Successfully created Workflow.")
-	fmt.Println("\tID:", workflowID)
-	fmt.Println("\tName:", workflowName)
-
-	// Create a resource - used for workflow assignments
+	// Create the resources - used for workflow assignments
 	tags := sdm.Tags{"example": "example"}
 	resourceCreateResponse, err := client.Resources().Create(ctx, &sdm.Mysql{
 		Name:         "Example MySQL Resource for Workflow Assignments",
@@ -79,21 +60,30 @@ func main() {
 	}
 	resourceID := resourceCreateResponse.Resource.GetID()
 
-	// Update workflow assignments
-	wf.AccessRules = sdm.AccessRules{
-		sdm.AccessRule{
-			Type: "mysql",
-			Tags: tags,
+	// Create a Workflow and assign the resources via a static access rule
+	workflow := &sdm.Workflow{
+		Name:        "Example Create Worfklow",
+		Description: "Example Workflow Description",
+		AccessRules: sdm.AccessRules{
+			sdm.AccessRule{
+				Type: "mysql",
+				Tags: tags,
+			},
 		},
 	}
-	_, err = client.Workflows().Update(ctx, wf)
+
+	createResponse, err := client.Workflows().Create(ctx, workflow)
 	if err != nil {
-		log.Fatalf("Could not update workflow: %v", err)
+		log.Fatalf("Could not create workflow: %v", err)
 	}
 
-	fmt.Println("Successfully updated WorkflowAssignment.")
-	fmt.Println("\tWorkflow ID:", workflowID)
-	fmt.Println("\tResource ID:", resourceID)
+	wf := createResponse.Workflow
+	workflowID := wf.ID
+	workflowName := wf.Name
+
+	fmt.Println("Successfully created Workflow.")
+	fmt.Println("\tID:", workflowID)
+	fmt.Println("\tName:", workflowName)
 
 	// List WorkflowAssignments
 	filter := "resource:" + resourceID + " workflow:" + workflowID
