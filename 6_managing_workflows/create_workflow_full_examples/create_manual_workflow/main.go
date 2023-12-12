@@ -46,7 +46,7 @@ func main() {
 
 	// Create a manual Workflow with initial Access Rule
 	workflow := &sdm.Workflow{
-		Name:        "Full Example Create Manual Worfklow",
+		Name:        "Full Example Create Manual Workflow",
 		Description: "Example Workflow Description",
 		AccessRules: sdm.AccessRules{
 			sdm.AccessRule{

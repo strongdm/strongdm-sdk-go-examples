@@ -62,7 +62,7 @@ func main() {
 
 	// Create a Workflow and assign the resources via a static access rule
 	workflow := &sdm.Workflow{
-		Name:        "Example Create Worfklow",
+		Name:        "Example Create Workflow",
 		Description: "Example Workflow Description",
 		AccessRules: sdm.AccessRules{
 			sdm.AccessRule{

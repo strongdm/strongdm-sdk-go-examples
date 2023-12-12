@@ -20,7 +20,7 @@ import (
 	"os"
 	"time"
 
-	sdm "github.com/strongdm/strongdm-sdk-go/v4"
+	sdm "github.com/strongdm/strongdm-sdk-go/v6"
 )
 
 func main() {
@@ -64,25 +64,25 @@ func main() {
 
 	wf := createResponse.Workflow
 
-	// Create a Role - used for creating a workflow role
+	// Create an approver role - used for creating a workflow approver
 	roleCreateResponse, err := client.Roles().Create(ctx, &sdm.Role{
-		Name: "Example Role for creating WorkflowRole",
+		Name: "example role for workflow approver role",
 	})
 	if err != nil {
 		log.Fatalf("Could not create role: %v", err)
 	}
 	roleID := roleCreateResponse.Role.ID
 
-	// Create a WorkflowRole
-	_, err = client.WorkflowRoles().Create(ctx, &sdm.WorkflowRole{
+	// Create a WorkflowApprover
+	_, err = client.WorkflowApprovers().Create(ctx, &sdm.WorkflowApprover{
 		WorkflowID: wf.ID,
 		RoleID:     roleID,
 	})
 	if err != nil {
-		log.Fatalf("Could not create workflow role: %v", err)
+		log.Fatalf("Could not create workflow approver: %v", err)
 	}
 
-	fmt.Println("Successfully created WorkflowRole.")
+	fmt.Println("Successfully created WorkflowApprover.")
 	fmt.Println("\tWorkflow ID:", wf.ID)
 	fmt.Println("\tRole ID:", roleID)
 }

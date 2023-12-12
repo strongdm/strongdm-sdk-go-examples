@@ -20,7 +20,7 @@ import (
 	"os"
 	"time"
 
-	sdm "github.com/strongdm/strongdm-sdk-go/v4"
+	sdm "github.com/strongdm/strongdm-sdk-go/v6"
 )
 
 func main() {
@@ -46,7 +46,7 @@ func main() {
 
 	// Create a Workflow
 	workflow := &sdm.Workflow{
-		Name:        "Example Create Worfklow",
+		Name:        "Example Create Workflow",
 		Description: "Example Workflow Description",
 		AccessRules: sdm.AccessRules{
 			sdm.AccessRule{
@@ -64,9 +64,9 @@ func main() {
 
 	wf := createResponse.Workflow
 
-	// Create a approver - used for creating a workflow approver
+	// Create an approver account - used for creating a workflow approver
 	approverCreateResponse, err := client.Accounts().Create(ctx, &sdm.User{
-		Email:     "create-workflow-approver-example@example.com",
+		Email:     "delete-workflow-approver-example@example.com",
 		FirstName: "example",
 		LastName:  "example",
 	})
@@ -76,15 +76,19 @@ func main() {
 	approverID := approverCreateResponse.Account.GetID()
 
 	// Create a WorkflowApprover
-	_, err = client.WorkflowApprovers().Create(ctx, &sdm.WorkflowApprover{
+	workflowApproverCreateResponse, err := client.WorkflowApprovers().Create(ctx, &sdm.WorkflowApprover{
 		WorkflowID: wf.ID,
-		ApproverID: approverID,
+		AccountID:  approverID,
 	})
 	if err != nil {
 		log.Fatalf("Could not create workflow approver: %v", err)
 	}
+	workflowApprover := workflowApproverCreateResponse.WorkflowApprover
 
-	fmt.Println("Successfully created WorkflowApprover.")
-	fmt.Println("\tWorkflow ID:", wf.ID)
-	fmt.Println("\tApprover ID:", approverID)
+	// Delete a WorkflowApprover
+	_, err = client.WorkflowApprovers().Delete(ctx, workflowApprover.ID)
+	if err != nil {
+		log.Fatalf("Could not create workflow approver: %v", err)
+	}
+	fmt.Println("Successfully deleted workflow approver.")
 }

@@ -48,7 +48,7 @@ func main() {
 	// will not be enabled by default. See the create_workflow_full_example/
 	// create_manual_workflow example for more.
 	workflow := &sdm.Workflow{
-		Name:        "Example Create Manual Worfklow",
+		Name:        "Example Create Manual Workflow",
 		Description: "Example Workflow Description",
 		AccessRules: sdm.AccessRules{
 			sdm.AccessRule{

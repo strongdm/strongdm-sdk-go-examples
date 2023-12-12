@@ -46,7 +46,7 @@ func main() {
 
 	// Create a Workflow
 	workflow := &sdm.Workflow{
-		Name:        "Example Update Worfklow",
+		Name:        "Example Update Workflow",
 		Description: "Example Workflow Description",
 	}
 
