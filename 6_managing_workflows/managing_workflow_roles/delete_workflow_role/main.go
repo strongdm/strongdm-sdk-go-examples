@@ -46,7 +46,7 @@ func main() {
 
 	// Create a Workflow
 	workflow := &sdm.Workflow{
-		Name:        "Example Create Worfklow",
+		Name:        "Example Create Workflow",
 		Description: "Example Workflow Description",
 		AccessRules: sdm.AccessRules{
 			sdm.AccessRule{

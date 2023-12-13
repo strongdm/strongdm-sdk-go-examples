@@ -46,7 +46,7 @@ func main() {
 
 	// Create an auto grant Workflow with initial Access Rule
 	workflow := &sdm.Workflow{
-		Name:        "Full Example Create Auto Grant Worfklow",
+		Name:        "Full Example Create Auto Grant Workflow",
 		Description: "Example Workflow Description",
 		AutoGrant:   true,
 		Enabled:     true,
