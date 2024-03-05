@@ -86,7 +86,7 @@ func main() {
 	// Delete a WorkflowApprover
 	_, err = client.WorkflowApprovers().Delete(ctx, workflowApprover.ID)
 	if err != nil {
-		log.Fatalf("Could not create workflow approver: %v", err)
+		log.Fatalf("Could not delete workflow approver: %v", err)
 	}
 	fmt.Println("Successfully deleted workflow approver.")
 }

@@ -44,51 +44,54 @@ func main() {
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
-	// Create a Workflow
-	workflow := &sdm.Workflow{
-		Name:        "Example Create Workflow",
-		Description: "Example Workflow Description",
-		AccessRules: sdm.AccessRules{
-			sdm.AccessRule{
-				Tags: sdm.Tags{
-					"env": "dev",
-				},
-			},
-		},
+	// Create a manual approval workflow.
+	approvalWorkflow := &sdm.ApprovalWorkflow{
+		Name:         "Example Approval Workflow",
+		ApprovalMode: "manual",
 	}
 
-	createResponse, err := client.Workflows().Create(ctx, workflow)
+	createResponse, err := client.ApprovalWorkflows().Create(ctx, approvalWorkflow)
 	if err != nil {
-		log.Fatalf("Could not create workflow: %v", err)
+		log.Fatalf("Could not create approval workflow: %v", err)
 	}
 
-	wf := createResponse.Workflow
+	flow := createResponse.ApprovalWorkflow
 
-	// Create an approver account - used for creating a workflow approver
-	approverCreateResponse, err := client.Accounts().Create(ctx, &sdm.User{
-		Email:     "delete-workflow-approver-example@example.com",
+	// Create an approval workflow step
+	stepCreateResponse, err := client.ApprovalWorkflowSteps().Create(ctx, &sdm.ApprovalWorkflowStep{
+		ApprovalFlowID: flow.ID,
+	})
+	if err != nil {
+		log.Fatalf("Could not create approval workflow step: %v", err)
+	}
+	step := stepCreateResponse.ApprovalWorkflowStep
+
+	// Create an approver account - used for creating an approval workflow approver
+	accountCreateResponse, err := client.Accounts().Create(ctx, &sdm.User{
+		Email:     "approval-workflow-approver-example@example.com",
 		FirstName: "example",
 		LastName:  "example",
 	})
 	if err != nil {
 		log.Fatalf("Could not create approver: %v", err)
 	}
-	approverID := approverCreateResponse.Account.GetID()
+	accountID := accountCreateResponse.Account.GetID()
 
-	// Create a WorkflowApprover
-	workflowApproverCreateResponse, err := client.WorkflowApprovers().Create(ctx, &sdm.WorkflowApprover{
-		WorkflowID: wf.ID,
-		AccountID:  approverID,
+	// Create an approval workflow approver
+	approverCreateResponse, err := client.ApprovalWorkflowApprovers().Create(ctx, &sdm.ApprovalWorkflowApprover{
+		ApprovalFlowID: flow.ID,
+		ApprovalStepID: step.ID,
+		AccountID:      accountID,
 	})
 	if err != nil {
-		log.Fatalf("Could not create workflow approver: %v", err)
+		log.Fatalf("Could not create approval workflow approver: %v", err)
 	}
-	workflowApprover := workflowApproverCreateResponse.WorkflowApprover
+	approver := approverCreateResponse.ApprovalWorkflowApprover
 
-	// Delete a WorkflowApprover
-	_, err = client.WorkflowApprovers().Delete(ctx, workflowApprover.ID)
+	// Delete an approval workflow approver
+	_, err = client.ApprovalWorkflowApprovers().Delete(ctx, approver.ID)
 	if err != nil {
-		log.Fatalf("Could not delete workflow approver: %v", err)
+		log.Fatalf("Could not delete approval workflow approver: %v", err)
 	}
-	fmt.Println("Successfully deleted workflow approver.")
+	fmt.Println("Successfully deleted approval workflow approver.")
 }

@@ -20,7 +20,7 @@ import (
 	"os"
 	"time"
 
-	sdm "github.com/strongdm/strongdm-sdk-go/v4"
+	sdm "github.com/strongdm/strongdm-sdk-go/v6"
 )
 
 func main() {
@@ -44,49 +44,52 @@ func main() {
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
-	// Create a Workflow
-	workflow := &sdm.Workflow{
-		Name:        "Example Create Workflow",
-		Description: "Example Workflow Description",
-		AccessRules: sdm.AccessRules{
-			sdm.AccessRule{
-				Tags: sdm.Tags{
-					"env": "dev",
-				},
-			},
-		},
+	// Create a manual approval workflow.
+	approvalWorkflow := &sdm.ApprovalWorkflow{
+		Name:         "Example Approval Workflow",
+		ApprovalMode: "manual",
 	}
 
-	createResponse, err := client.Workflows().Create(ctx, workflow)
+	createResponse, err := client.ApprovalWorkflows().Create(ctx, approvalWorkflow)
 	if err != nil {
-		log.Fatalf("Could not create workflow: %v", err)
+		log.Fatalf("Could not create approval workflow: %v", err)
 	}
 
-	wf := createResponse.Workflow
+	flow := createResponse.ApprovalWorkflow
 
-	// Create a Role - used for creating a workflow role
+	// Create an approval workflow step
+	stepCreateResponse, err := client.ApprovalWorkflowSteps().Create(ctx, &sdm.ApprovalWorkflowStep{
+		ApprovalFlowID: flow.ID,
+	})
+	if err != nil {
+		log.Fatalf("Could not create approval workflow step: %v", err)
+	}
+	step := stepCreateResponse.ApprovalWorkflowStep
+
+	// Create an approver role - used for creating an approval workflow approver
 	roleCreateResponse, err := client.Roles().Create(ctx, &sdm.Role{
-		Name: "Example Role for creating WorkflowRole",
+		Name: "example role for approval workflow approver role",
 	})
 	if err != nil {
 		log.Fatalf("Could not create role: %v", err)
 	}
 	roleID := roleCreateResponse.Role.ID
 
-	// Create a WorkflowRole
-	workflowRoleCreateResponse, err := client.WorkflowRoles().Create(ctx, &sdm.WorkflowRole{
-		WorkflowID: wf.ID,
-		RoleID:     roleID,
+	// Create an approval workflow approver
+	approverCreateResponse, err := client.ApprovalWorkflowApprovers().Create(ctx, &sdm.ApprovalWorkflowApprover{
+		ApprovalFlowID: flow.ID,
+		ApprovalStepID: step.ID,
+		RoleID:         roleID,
 	})
 	if err != nil {
-		log.Fatalf("Could not create workflow role: %v", err)
+		log.Fatalf("Could not create approval workflow approver: %v", err)
 	}
-	workflowRole := workflowRoleCreateResponse.WorkflowRole
+	approver := approverCreateResponse.ApprovalWorkflowApprover
 
-	// Delete a WorkflowRole
-	_, err = client.WorkflowRoles().Delete(ctx, workflowRole.ID)
+	// Delete an approval workflow approver
+	_, err = client.ApprovalWorkflowApprovers().Delete(ctx, approver.ID)
 	if err != nil {
-		log.Fatalf("Could not delete workflow role: %v", err)
+		log.Fatalf("Could not delete approval workflow approver: %v", err)
 	}
-	fmt.Println("Successfully deleted workflow role.")
+	fmt.Println("Successfully deleted approval workflow approver.")
 }
