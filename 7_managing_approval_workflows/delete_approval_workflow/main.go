@@ -1,4 +1,4 @@
-// Copyright 2023 StrongDM Inc
+// Copyright 2024 StrongDM Inc
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -44,51 +44,23 @@ func main() {
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
-	// Create a Workflow
-	workflow := &sdm.Workflow{
-		Name:        "Example Create Workflow",
-		Description: "Example Workflow Description",
-		AccessRules: sdm.AccessRules{
-			sdm.AccessRule{
-				Tags: sdm.Tags{
-					"env": "dev",
-				},
-			},
-		},
+	// Create an auto grant approval workflow.
+	approvalWorkflow := &sdm.ApprovalWorkflow{
+		Name:         "Example Delete Approval Workflow",
+		ApprovalMode: "automatic",
 	}
 
-	createResponse, err := client.Workflows().Create(ctx, workflow)
+	createResponse, err := client.ApprovalWorkflows().Create(ctx, approvalWorkflow)
 	if err != nil {
-		log.Fatalf("Could not create workflow: %v", err)
+		log.Fatalf("Could not create approval workflow: %v", err)
 	}
 
-	wf := createResponse.Workflow
+	flowID := createResponse.ApprovalWorkflow.ID
 
-	// Create an approver account - used for creating a workflow approver
-	approverCreateResponse, err := client.Accounts().Create(ctx, &sdm.User{
-		Email:     "delete-workflow-approver-example@example.com",
-		FirstName: "example",
-		LastName:  "example",
-	})
+	// Delete the approval workflow
+	_, err = client.ApprovalWorkflows().Delete(ctx, flowID)
 	if err != nil {
-		log.Fatalf("Could not create approver: %v", err)
+		log.Fatalf("Could not delete approval workflow: %v", err)
 	}
-	approverID := approverCreateResponse.Account.GetID()
-
-	// Create a WorkflowApprover
-	workflowApproverCreateResponse, err := client.WorkflowApprovers().Create(ctx, &sdm.WorkflowApprover{
-		WorkflowID: wf.ID,
-		AccountID:  approverID,
-	})
-	if err != nil {
-		log.Fatalf("Could not create workflow approver: %v", err)
-	}
-	workflowApprover := workflowApproverCreateResponse.WorkflowApprover
-
-	// Delete a WorkflowApprover
-	_, err = client.WorkflowApprovers().Delete(ctx, workflowApprover.ID)
-	if err != nil {
-		log.Fatalf("Could not create workflow approver: %v", err)
-	}
-	fmt.Println("Successfully deleted workflow approver.")
+	fmt.Println("Successfully deleted approval workflow.")
 }

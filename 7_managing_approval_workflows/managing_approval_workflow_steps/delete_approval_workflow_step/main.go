@@ -1,4 +1,4 @@
-// Copyright 2023 StrongDM Inc
+// Copyright 2024 StrongDM Inc
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -44,49 +44,33 @@ func main() {
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
-	// Create a Workflow
-	workflow := &sdm.Workflow{
-		Name:        "Example Create Workflow",
-		Description: "Example Workflow Description",
-		AccessRules: sdm.AccessRules{
-			sdm.AccessRule{
-				Tags: sdm.Tags{
-					"env": "dev",
-				},
-			},
-		},
+	// Create a manual approval workflow.
+	approvalWorkflow := &sdm.ApprovalWorkflow{
+		Name:         "Example Approval Workflow",
+		ApprovalMode: "manual",
 	}
 
-	createResponse, err := client.Workflows().Create(ctx, workflow)
+	createResponse, err := client.ApprovalWorkflows().Create(ctx, approvalWorkflow)
 	if err != nil {
-		log.Fatalf("Could not create workflow: %v", err)
+		log.Fatalf("Could not create approval workflow: %v", err)
 	}
 
-	wf := createResponse.Workflow
+	flow := createResponse.ApprovalWorkflow
 
-	// Create an approver role - used for creating a workflow approver
-	roleCreateResponse, err := client.Roles().Create(ctx, &sdm.Role{
-		Name: "example role for workflow approver role",
+	// Create an approval workflow step
+	stepCreateResponse, err := client.ApprovalWorkflowSteps().Create(ctx, &sdm.ApprovalWorkflowStep{
+		ApprovalFlowID: flow.ID,
 	})
 	if err != nil {
-		log.Fatalf("Could not create role: %v", err)
+		log.Fatalf("Could not create approval workflow step: %v", err)
 	}
-	roleID := roleCreateResponse.Role.ID
 
-	// Create a WorkflowApprover
-	workflowApproverCreateResponse, err := client.WorkflowApprovers().Create(ctx, &sdm.WorkflowApprover{
-		WorkflowID: wf.ID,
-		RoleID:     roleID,
-	})
-	if err != nil {
-		log.Fatalf("Could not create workflow approver: %v", err)
-	}
-	workflowApprover := workflowApproverCreateResponse.WorkflowApprover
+	step := stepCreateResponse.ApprovalWorkflowStep
 
-	// Delete a WorkflowApprover
-	_, err = client.WorkflowApprovers().Delete(ctx, workflowApprover.ID)
+	// Delete an approval workflow step
+	_, err = client.ApprovalWorkflowSteps().Delete(ctx, step.ID)
 	if err != nil {
-		log.Fatalf("Could not create workflow approver: %v", err)
+		log.Fatalf("Could not delete approval workflow step: %v", err)
 	}
-	fmt.Println("Successfully deleted workflow approver.")
+	fmt.Println("Successfully deleted approval workflow step.")
 }

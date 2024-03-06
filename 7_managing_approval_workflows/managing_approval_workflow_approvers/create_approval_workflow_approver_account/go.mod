@@ -1,10 +1,10 @@
 module sdk
 
-go 1.21
+go 1.22
 
 require (
 	github.com/golang/protobuf v1.5.0 // indirect
-	github.com/strongdm/strongdm-sdk-go/v6 v6.0.0 // indirect
+	github.com/strongdm/strongdm-sdk-go/v6 v6.9.0 // indirect
 	golang.org/x/net v0.0.0-20190311183353-d8887717615a // indirect
 	golang.org/x/sys v0.0.0-20190215142949-d0b11bdaac8a // indirect
 	golang.org/x/text v0.3.0 // indirect
