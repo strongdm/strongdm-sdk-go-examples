@@ -46,9 +46,10 @@ func main() {
 
 	// Create a User
 	user := &sdm.User{
-		Email:     "suspend-account@example.com",
-		FirstName: "example",
-		LastName:  "example",
+		Email:           "update-permissions-account@example.com",
+		FirstName:       "example",
+		LastName:        "example",
+		PermissionLevel: sdm.PermissionLevelTeamLeader,
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
@@ -63,9 +64,10 @@ func main() {
 	id := account.GetID()
 	fmt.Println("Successfully created user.")
 	fmt.Println("\tID:", id)
+	fmt.Println("\tPermission Level:", account.PermissionLevel)
 
 	// Set the fields to change
-	account.PermissionLevel = sdm.PermissionLevelSuspended
+	account.PermissionLevel = sdm.PermissionLevelDatabaseAdmin
 
 	// Update the account
 	updateResponse, err := client.Accounts().Update(ctx, account)
@@ -73,7 +75,9 @@ func main() {
 		log.Fatalf("Could not update account: %v", err)
 	}
 
-	fmt.Println("Successfully suspended account.")
-	fmt.Println("\tID:", updateResponse.Account.GetID())
-	fmt.Println("\tSuspended:", updateResponse.Account.IsSuspended())
+	updateAccount := updateResponse.Account.(*sdm.User)
+
+	fmt.Println("Successfully updated permission level.")
+	fmt.Println("\tID:", updateAccount.GetID())
+	fmt.Println("\tPermission Level:", updateAccount.PermissionLevel)
 }
