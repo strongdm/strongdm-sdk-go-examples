@@ -30,9 +30,9 @@ func main() {
 	//	please follow the documentation here:
 	//	https://www.strongdm.com/docs/api/api-keys/
 
-	// For this token rotation script, the API key used to
-	// create theclient must havepermissions to create and delete tokens,
-	// as well as any permissions the rotated token possesses
+	// For this token rotation script, the API key used here
+	// must have permissions to create and delete tokens,
+	// as well as any permissions the rotated token possesses.
 	accessKey := os.Getenv("SDM_API_ACCESS_KEY")
 	secretKey := os.Getenv("SDM_API_SECRET_KEY")
 	if accessKey == "" || secretKey == "" {
@@ -53,7 +53,7 @@ func main() {
 		Name:        "example-token", // unique name of token
 		AccountType: "api",
 		Duration:    time.Hour, // duration in seconds
-		Permissions: []string{"role:create", "token:create"},
+		Permissions: []string{"role:create", "token:create", "token:delete"},
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
