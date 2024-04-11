@@ -46,7 +46,7 @@ func main() {
 
 	// Create an API Key
 	apiKey := &sdm.Token{
-		Name:        "example-token", // name of token must be unique
+		Name:        "go-test-create-token", // name of token must be unique
 		AccountType: "api",
 		Duration:    time.Hour,
 		Permissions: []string{sdm.PermissionRoleCreate, sdm.PermissionUserCreateAdminToken},
@@ -73,7 +73,7 @@ func main() {
 
 	// Create an Admin Token
 	adminToken := &sdm.Token{
-		Name:        "example-token2", // name of token must be unique
+		Name:        "go-test-create-token2", // name of token must be unique
 		AccountType: "admin-token",
 		Duration:    time.Hour,
 		Permissions: []string{sdm.PermissionRoleCreate, sdm.PermissionUserCreateAdminToken},

@@ -51,7 +51,7 @@ func main() {
 
 	// Create an API Key
 	apiKey := &sdm.Token{
-		Name:        "example-token", // name of token must be unique
+		Name:        "go-test-rotate-token", // name of token must be unique
 		AccountType: "api",
 		Duration:    time.Hour,
 		Permissions: []string{sdm.PermissionRoleCreate, sdm.PermissionUserCreateAdminToken},
