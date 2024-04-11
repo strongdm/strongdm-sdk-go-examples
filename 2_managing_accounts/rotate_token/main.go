@@ -32,7 +32,8 @@ func main() {
 
 	// For this token rotation script, the API key used here
 	// must have permissions to create and delete tokens,
-	// as well as any permissions the rotated token possesses.
+	// Any token created by this API Key can only have permissions
+	// that are a subset of permissions possessed by this API Key.
 	accessKey := os.Getenv("SDM_API_ACCESS_KEY")
 	secretKey := os.Getenv("SDM_API_SECRET_KEY")
 	if accessKey == "" || secretKey == "" {
@@ -50,10 +51,10 @@ func main() {
 
 	// Create an API Key
 	apiKey := &sdm.Token{
-		Name:        "example-token", // unique name of token
+		Name:        "example-token", // name of token must be unique
 		AccountType: "api",
-		Duration:    time.Hour, // duration in seconds
-		Permissions: []string{"role:create", "token:create", "token:delete"},
+		Duration:    time.Hour,
+		Permissions: []string{"role:create", "user:create_admin_token"},
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
@@ -87,21 +88,24 @@ func main() {
 	oldTokenID := oldToken.ID
 
 	// Temporarily update the name of the old token
-	// so new one can be created with same name
+	// so new one can be created with its name
 	deprecatedToken := &sdm.Token{
 		ID:   oldTokenID,
 		Name: tokenName + "-deprecated",
 	}
+
 	_, err = client.Accounts().Update(ctx, deprecatedToken)
 	if err != nil {
 		log.Fatalf("Failed to update name of old token to deprecated: %v", err)
 	}
 
+	fmt.Println("Successfully updated name of old token")
+
 	// Create new token with same name and permissions as old token
 	newApiKey := &sdm.Token{
-		Name:        tokenName, // unique name of token
+		Name:        tokenName,
 		AccountType: oldToken.AccountType,
-		Duration:    oldToken.Duration, // duration in seconds
+		Duration:    oldToken.Duration,
 		Permissions: oldToken.Permissions,
 	}
 

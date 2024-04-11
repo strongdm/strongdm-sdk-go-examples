@@ -46,10 +46,10 @@ func main() {
 
 	// Create an API Key
 	apiKey := &sdm.Token{
-		Name:        "example-token", // unique name of token
+		Name:        "example-token", // name of token must be unique
 		AccountType: "api",
-		Duration:    time.Hour, // duration in seconds
-		Permissions: []string{"role:create", "token:create"},
+		Duration:    time.Hour,
+		Permissions: []string{"role:create", "user:create_admin_token"},
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
