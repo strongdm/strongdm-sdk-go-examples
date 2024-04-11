@@ -49,7 +49,7 @@ func main() {
 		Name:        "example-token", // name of token must be unique
 		AccountType: "api",
 		Duration:    time.Hour,
-		Permissions: []string{"role:create", "user:create_admin_token"},
+		Permissions: []string{sdm.PermissionRoleCreate, sdm.PermissionUserCreateAdminToken},
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
@@ -76,7 +76,7 @@ func main() {
 		Name:        "example-token2", // name of token must be unique
 		AccountType: "admin-token",
 		Duration:    time.Hour,
-		Permissions: []string{"role:create", "user:create_admin_token"},
+		Permissions: []string{sdm.PermissionRoleCreate, sdm.PermissionUserCreateAdminToken},
 	}
 
 	ctx, cancel = context.WithTimeout(context.Background(), 30*time.Second)
