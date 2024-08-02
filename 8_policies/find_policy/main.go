@@ -96,7 +96,7 @@ func main() {
 		fmt.Println("\tName:", createdPolicy.Policy.Name)
 	}
 
-	// Find policies that related to `sql` by Name
+	// Find policies related to `sql` by Name
 	fmt.Println("Finding all Policies with a name containing 'sql'")
 	listResp, err := client.Policies().List(ctx, "name:*sql*")
 	if err != nil {
@@ -108,7 +108,7 @@ func main() {
 	}
 
 	// Find policies that forbid based on the Policy
-	fmt.Println("Finding all Policies with a name containing 'sql'")
+	fmt.Println("Finding all Policies that forbid")
 	listResp, err = client.Policies().List(ctx, "policy:forbid*")
 	if err != nil {
 		log.Fatalf("Could not list policies: %v", err)
