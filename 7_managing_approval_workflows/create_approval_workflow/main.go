@@ -58,7 +58,7 @@ func main() {
 	flowID := createResponse.ApprovalWorkflow.ID
 	flowName := createResponse.ApprovalWorkflow.Name
 
-	fmt.Println("Successfully created Workflow.")
+	fmt.Println("Successfully created approval workflow.")
 	fmt.Println("\tID:", flowID)
 	fmt.Println("\tName:", flowName)
 }
