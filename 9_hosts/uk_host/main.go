@@ -44,15 +44,25 @@ func main() {
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 	
-	// Create an approval workflow for example.
-	_, err = client.ApprovalWorkflows().Create(ctx, 
-		&sdm.ApprovalWorkflow{
-			Name:         "Example Approval Workflow",
-			ApprovalMode: "automatic",
+	// Create a Postgres Datasource for example
+	datasource := &sdm.Postgres{
+		Name:         "Example Postgres Datasource",
+		Hostname:     "example.strongdm.com",
+		Port:         5432,
+		Username:     "example",
+		Password:     "example",
+		Database:     "example",
+		PortOverride: 19999,
+		Tags: sdm.Tags{
+			"example": "example",
 		},
-	)
-	if err != nil {
-		log.Fatalf("Could not create approval workflow: %v", err)
 	}
-	fmt.Println("Successfully created Workflow.")
+
+	createResponse, err := client.Resources().Create(ctx, datasource)
+	if err != nil {
+		log.Fatalf("Could not create Postgres datasource: %v", err)
+	}
+
+	fmt.Println("Successfully created Postgres datasource.")
+	fmt.Println("\tID:", createResponse.Resource.GetID())
 }
