@@ -36,7 +36,7 @@ func main() {
 	}
 
 	// Configure a client to communicate with the UK host.
-    // If the WithHost option is not provided it will default to the US control plane (api.strongdm.com:443)
+    // If the WithHost option is not provided, it will default to the US control plane (api.strongdm.com:443)
 	client, err := sdm.New(accessKey, secretKey, sdm.WithHost(sdm.APIHostUK))
 	if err != nil {
 		log.Fatal("failed to create strongDM client:", err)
