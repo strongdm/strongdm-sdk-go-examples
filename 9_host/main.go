@@ -20,7 +20,7 @@ import (
 	"os"
 	"time"
 
-	sdm "github.com/strongdm/strongdm-sdk-go/v6"
+	sdm "github.com/strongdm/strongdm-sdk-go/v11"
 )
 
 func main() {
@@ -35,30 +35,35 @@ func main() {
 		log.Fatal("SDM_API_ACCESS_KEY and SDM_API_SECRET_KEY must be provided")
 	}
 
-	// Create the client
-	client, err := sdm.New(accessKey, secretKey)
+	// Configure a client to communicate with the UK host.
+	// If the WithHost option is not provided, it will default to the US control plane (api.strongdm.com:443)
+	client, err := sdm.New(accessKey, secretKey, sdm.WithHost(sdm.APIHostUK))
 	if err != nil {
 		log.Fatal("failed to create strongDM client:", err)
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
-
-	// Create an auto grant approval workflow.
-	approvalWorkflow := &sdm.ApprovalWorkflow{
-		Name:         "Example Create Approval Workflow",
-		ApprovalMode: "automatic",
+	
+	// Create a Postgres Datasource for example
+	datasource := &sdm.Postgres{
+		Name:         "Example Postgres Datasource",
+		Hostname:     "example.strongdm.com",
+		Port:         5432,
+		Username:     "example",
+		Password:     "example",
+		Database:     "example",
+		PortOverride: 19999,
+		Tags: sdm.Tags{
+			"example": "example",
+		},
 	}
 
-	createResponse, err := client.ApprovalWorkflows().Create(ctx, approvalWorkflow)
+	createResponse, err := client.Resources().Create(ctx, datasource)
 	if err != nil {
-		log.Fatalf("Could not create approval workflow: %v", err)
+		log.Fatalf("Could not create Postgres datasource: %v", err)
 	}
 
-	flowID := createResponse.ApprovalWorkflow.ID
-	flowName := createResponse.ApprovalWorkflow.Name
-
-	fmt.Println("Successfully created approval workflow.")
-	fmt.Println("\tID:", flowID)
-	fmt.Println("\tName:", flowName)
+	fmt.Println("Successfully created Postgres datasource.")
+	fmt.Println("\tID:", createResponse.Resource.GetID())
 }
