@@ -67,7 +67,7 @@ func main() {
 
 	// Create an approver role - used for creating an approval workflow approver
 	roleCreateResponse, err := client.Roles().Create(ctx, &sdm.Role{
-		Name: "example role for approval workflow approver role",
+		Name: "example role for approval workflow approver",
 	})
 	if err != nil {
 		log.Fatalf("Could not create role: %v", err)
@@ -109,11 +109,10 @@ func main() {
 		Name:         "Example Approval Workflow Autogrant",
 		ApprovalMode: "automatic",
 	}
-	resp, err = client.ApprovalWorkflows().Create(ctx, approvalWorkflow)
+	_, err = client.ApprovalWorkflows().Create(ctx, approvalWorkflow)
 	if err != nil {
 		log.Fatalf("Could not create approval workflow: %v", err)
 	}
-
 
 	// filter by approval workflow id
 	listResp, err := client.ApprovalWorkflows().List(ctx, "id:?", flow1ID)
@@ -130,15 +129,15 @@ func main() {
 
 	// filter by approval workflow name
 	listResp, err = client.ApprovalWorkflows().List(ctx, "name:?", "Example*")
-	var gotApprovalWorkflows []*sdm.ApprovalWorkflow
+	var approvalFlowsFilterByName []*sdm.ApprovalWorkflow
 	for listResp.Next() {
 		n := listResp.Value()
-		gotApprovalWorkflows = append(gotApprovalWorkflows, n)
+		approvalFlowsFilterByName = append(approvalFlowsFilterByName, n)
 	}
 	if listResp.Err() != nil {
 		log.Fatalf("Could not list approval workflows: %v", err)
 	}
 
 	fmt.Println("Successfully got approval workflows")
-	fmt.Println("\tApproval Workflows Returned:", len(approvalFlows))
+	fmt.Println("\tApproval Workflows Returned:", len(approvalFlowsFilterByName))
 }
