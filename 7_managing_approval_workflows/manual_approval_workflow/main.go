@@ -1,4 +1,4 @@
-// Copyright 2024 StrongDM Inc
+// Copyright 2025 StrongDM Inc
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import (
 	sdm "github.com/strongdm/strongdm-sdk-go/v14"
 )
 
+// Examples for Create, Get, Update, and Delete on manual approval workflows
 func main() {
 	log.SetFlags(0)
 	//	Load the SDM API keys from the environment.
@@ -44,7 +45,8 @@ func main() {
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
-	// Create an approver account - used for creating an approval workflow approver
+	// Create an approver account - this account is designated as an approver in the approval workflow created below,
+	// allowing this user to grant approval
 	accountCreateResponse, err := client.Accounts().Create(ctx, &sdm.User{
 		Email:     "approval-workflow-approver-example@example.com",
 		FirstName: "example",
@@ -65,7 +67,8 @@ func main() {
 	}
 	account2ID := account2CreateResponse.Account.GetID()
 
-	// Create an approver role - used for creating an approval workflow approver
+	// Create an approver role - this role is designated as an approver in the approval workflow created below,
+	// allowing any user in this role to grant approval
 	roleCreateResponse, err := client.Roles().Create(ctx, &sdm.Role{
 		Name: "example role for approval workflow approver role",
 	})
@@ -76,7 +79,7 @@ func main() {
 
 	// Create a manual grant approval workflow with multiple approval steps
 	af := &sdm.ApprovalWorkflow{
-		Name:         "Example approval workflow manual",
+		Name:         "Example Create Approval Workflow Manual",
 		Description:  "A manual grant approval workflow",
 		ApprovalMode: "manual",
 		ApprovalWorkflowSteps: []*sdm.ApprovalFlowStep{
@@ -101,10 +104,50 @@ func main() {
 	if err != nil {
 		log.Fatalf("Could not create approval workflow: %v", err)
 	}
+	fmt.Println("Successfully created manual approval workflow.")
+	fmt.Println("\tID:", resp.ApprovalWorkflow.ID)
+	fmt.Println("\tName:", resp.ApprovalWorkflow.Name)
+	fmt.Println("\tNumber of Approval Steps:", len(resp.ApprovalWorkflow.ApprovalWorkflowSteps))
+	for i, step := range resp.ApprovalWorkflow.ApprovalWorkflowSteps {
+		fmt.Println("\tQuantifier for step ", i+1, " : ", step.Quantifier)
+		fmt.Println("\tSkipAfter for step ", i+1, " : ", step.SkipAfter)
+		fmt.Print("\tApprovers for step ", i+1, " : ")
+		for _, approver := range step.Approvers {
+			if approver.AccountID != "" {
+				fmt.Print(approver.AccountID, ", ")
+			} else {
+				fmt.Print(approver.RoleID, ", ")
+			}
+		}
+		fmt.Println()
+	}
 
 	flow := resp.ApprovalWorkflow
 
-	// Update approval workflow
+	// Get an approval workflow by id
+	getResp, err := client.ApprovalWorkflows().Get(ctx, flow.ID)
+	if err != nil {
+		log.Fatalf("Could not get approval workflow: %v", err)
+	}
+	fmt.Println("Successfully got approval workflow.")
+	fmt.Println("\tID:", getResp.ApprovalWorkflow.ID)
+	fmt.Println("\tName:", getResp.ApprovalWorkflow.Name)
+	fmt.Println("\tNumber of Approval Steps:", len(getResp.ApprovalWorkflow.ApprovalWorkflowSteps))
+	for i, step := range resp.ApprovalWorkflow.ApprovalWorkflowSteps {
+		fmt.Println("\tQuantifier for step ", i+1, " : ", step.Quantifier)
+		fmt.Println("\tSkipAfter for step ", i+1, " : ", step.SkipAfter)
+		fmt.Print("\tApprovers for step ", i+1, " : ")
+		for _, approver := range step.Approvers {
+			if approver.AccountID != "" {
+				fmt.Print(approver.AccountID, ", ")
+			} else {
+				fmt.Print(approver.RoleID, ", ")
+			}
+		}
+		fmt.Println()
+	}
+
+	// Update an approval workflow
 	// Provide new configuration for approval workflow (Approval Workflow ID required)
 	updatedFlow := &sdm.ApprovalWorkflow{
 		ID:           flow.ID,
@@ -147,7 +190,7 @@ func main() {
 	fmt.Println("\tNew Approval Mode:", flow.ApprovalMode)
 	fmt.Println("\tNew Approval Steps:", len(flow.ApprovalWorkflowSteps))
 
-	// Updating an approval workflow from manual to autogrant deletes all approval steps and approvers
+	// Updating a manual approval flow to autogrant
 	flow.ApprovalMode = "automatic"
 	flow.ApprovalWorkflowSteps = []*sdm.ApprovalFlowStep{}
 	updated, err = client.ApprovalWorkflows().Update(ctx, flow)
@@ -160,4 +203,11 @@ func main() {
 	fmt.Println("\tNew Name:", flow.Name)
 	fmt.Println("\tNew Description:", flow.Description)
 	fmt.Println("\tNew Approval Mode:", flow.ApprovalMode)
+
+	// Delete the approval workflow
+	_, err = client.ApprovalWorkflows().Delete(ctx, flow.ID)
+	if err != nil {
+		log.Fatalf("Could not delete approval workflow: %v", err)
+	}
+	fmt.Println("Successfully deleted approval workflow.")
 }

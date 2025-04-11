@@ -1,4 +1,4 @@
-// Copyright 2024 StrongDM Inc
+// Copyright 2025 StrongDM Inc
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -46,7 +46,7 @@ func main() {
 
 	// Create an auto grant approval workflow.
 	approvalWorkflow := &sdm.ApprovalWorkflow{
-		Name:         "Example Delete Approval Workflow",
+		Name:         "Example Update Approval Workflow",
 		ApprovalMode: "automatic",
 	}
 
@@ -55,10 +55,50 @@ func main() {
 		log.Fatalf("Could not create approval workflow: %v", err)
 	}
 
-	flowID := createResponse.ApprovalWorkflow.ID
+	flow := createResponse.ApprovalWorkflow
+
+	fmt.Println("Successfully created approval workflow.")
+	fmt.Println("\tID:", flow.ID)
+	fmt.Println("\tName:", flow.Name)
+
+	// Update approval workflow Name
+	newName := "Example New Name"
+	flow.Name = newName
+	updated, err := client.ApprovalWorkflows().Update(ctx, flow)
+	if err != nil {
+		log.Fatalf("Could not update approval workflow: %v", err)
+	}
+	flow = updated.ApprovalWorkflow
+
+	fmt.Println("Successfully update approval workflow name.")
+	fmt.Println("\tNew Name:", flow.Name)
+
+	// Update approval workflow Description
+	description := "Example New Description"
+	flow.Description = description
+	updated, err = client.ApprovalWorkflows().Update(ctx, flow)
+	if err != nil {
+		log.Fatalf("Could not update approval workflow: %v", err)
+	}
+	flow = updated.ApprovalWorkflow
+
+	fmt.Println("Successfully update approval workflow description.")
+	fmt.Println("\tNew Description:", flow.Description)
+
+	// Update approval workflow approval mode
+	newMode := "manual"
+	flow.ApprovalMode = newMode
+	updated, err = client.ApprovalWorkflows().Update(ctx, flow)
+	if err != nil {
+		log.Fatalf("Could not update approval workflow: %v", err)
+	}
+	flow = updated.ApprovalWorkflow
+
+	fmt.Println("Successfully update approval workflow approval mode.")
+	fmt.Println("\tNew Approval Mode:", flow.ApprovalMode)
 
 	// Delete the approval workflow
-	_, err = client.ApprovalWorkflows().Delete(ctx, flowID)
+	_, err = client.ApprovalWorkflows().Delete(ctx, flow.ID)
 	if err != nil {
 		log.Fatalf("Could not delete approval workflow: %v", err)
 	}
