@@ -61,6 +61,15 @@ func main() {
 	fmt.Println("\tID:", flow.ID)
 	fmt.Println("\tName:", flow.Name)
 
+	// Get an approval workflow by id
+	getResp, err := client.ApprovalWorkflows().Get(ctx, flow.ID)
+	if err != nil {
+		log.Fatalf("Could not get approval workflow: %v", err)
+	}
+	fmt.Println("Successfully got approval workflow.")
+	fmt.Println("\tID:", getResp.ApprovalWorkflow.ID)
+	fmt.Println("\tName:", getResp.ApprovalWorkflow.Name)
+
 	// Update approval workflow Name
 	newName := "Example New Name"
 	flow.Name = newName
