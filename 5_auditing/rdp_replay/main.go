@@ -91,8 +91,8 @@ func main() {
 			}
 			defer os.RemoveAll(tempDir)
 
-			// Massage the query into the expected format
-			data := fmt.Sprintf(`{"type":"start","uuid":"%v","query":%q}`, q.ID, q.QueryBody)
+			// Massage the query into the expected format (https://www.strongdm.com/docs/admin/logs/references/post-start/)
+			data := fmt.Sprintf(`{"type":"postStart","uuid":"%v","query":%q}`, q.ID, q.QueryBody)
 			if err != nil {
 				log.Fatalf("failed to marshal query data: %v", err)
 			}
@@ -107,7 +107,7 @@ func main() {
 					log.Fatalf("failed to marshal chunk data: %v", err)
 				}
 
-				// Massage the chunk into the expected format
+				// Massage the chunk into the expected format (https://www.strongdm.com/docs/admin/logs/references/replays/)
 				chunkData := fmt.Sprintf(`{"type":"chunk","uuid":"%v","chunkId":"%v","events":%s}`, q.ID, chunkId, chunkEvents)
 				if err := os.WriteFile(filepath.Join(tempDir, fmt.Sprintf("relay.%010d.log", chunkId)), []byte(chunkData), 0644); err != nil {
 					log.Fatalf("failed to write chunk data: %v", err)
@@ -127,17 +127,10 @@ func main() {
 			cmd.Stderr = os.Stderr
 
 			if err := cmd.Run(); err != nil {
-				panic(err)
+				log.Fatalf("failed to execute sdm replay: %v", err)
 			}
 
 			fmt.Println("")
-		} else {
-			var capture struct{ Command string }
-			if err := json.Unmarshal([]byte(q.QueryBody), &capture); err != nil {
-				fmt.Printf("failed to unmarshal query JSON %v: %v", q.QueryBody, err)
-			} else {
-				fmt.Printf("Command (%v) run by %v at %v: %v\n", q.ResourceType, user.Email, q.Timestamp, capture.Command)
-			}
 		}
 	}
 }
