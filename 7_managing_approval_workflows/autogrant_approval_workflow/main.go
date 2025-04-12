@@ -1,4 +1,4 @@
-// Copyright 2024 StrongDM Inc
+// Copyright 2025 StrongDM Inc
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import (
 	"os"
 	"time"
 
-	sdm "github.com/strongdm/strongdm-sdk-go/v6"
+	sdm "github.com/strongdm/strongdm-sdk-go/v14"
 )
 
 func main() {
@@ -57,6 +57,19 @@ func main() {
 
 	flow := createResponse.ApprovalWorkflow
 
+	fmt.Println("Successfully created approval workflow.")
+	fmt.Println("\tID:", flow.ID)
+	fmt.Println("\tName:", flow.Name)
+
+	// Get an approval workflow by id
+	getResp, err := client.ApprovalWorkflows().Get(ctx, flow.ID)
+	if err != nil {
+		log.Fatalf("Could not get approval workflow: %v", err)
+	}
+	fmt.Println("Successfully got approval workflow.")
+	fmt.Println("\tID:", getResp.ApprovalWorkflow.ID)
+	fmt.Println("\tName:", getResp.ApprovalWorkflow.Name)
+
 	// Update approval workflow Name
 	newName := "Example New Name"
 	flow.Name = newName
@@ -92,4 +105,11 @@ func main() {
 
 	fmt.Println("Successfully update approval workflow approval mode.")
 	fmt.Println("\tNew Approval Mode:", flow.ApprovalMode)
+
+	// Delete the approval workflow
+	_, err = client.ApprovalWorkflows().Delete(ctx, flow.ID)
+	if err != nil {
+		log.Fatalf("Could not delete approval workflow: %v", err)
+	}
+	fmt.Println("Successfully deleted approval workflow.")
 }
