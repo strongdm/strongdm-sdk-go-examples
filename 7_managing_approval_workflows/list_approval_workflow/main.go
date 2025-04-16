@@ -56,7 +56,7 @@ func main() {
 	accountID := accountCreateResponse.Account.GetID()
 
 	account2CreateResponse, err := client.Accounts().Create(ctx, &sdm.User{
-		Email:     "approval-workflow-approver-example@example.com",
+		Email:     "approval-workflow-approver-example2@example.com",
 		FirstName: "example2",
 		LastName:  "example2",
 	})
