@@ -92,6 +92,8 @@ func main() {
 				Approvers: []*sdm.ApprovalFlowApprover{
 					{AccountID: account2ID},
 					{RoleID: roleID},
+					{Reference: "manager-of-requester"},
+					{Reference: "manager-of-manager-of-requester"},
 				},
 			},
 		},
