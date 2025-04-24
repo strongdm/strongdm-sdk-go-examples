@@ -95,8 +95,8 @@ func main() {
 				Approvers: []*sdm.ApprovalFlowApprover{
 					{AccountID: account2ID},
 					{RoleID: roleID},
-					{Reference: "manager-of-requester"},
-					{Reference: "manager-of-manager-of-requester"},
+					{Reference: sdm.ApproverReferenceManagerOfRequester},
+					{Reference: sdm.ApproverReferenceManagerOfManagerOfRequester},
 				},
 			},
 		},
@@ -168,7 +168,7 @@ func main() {
 				Quantifier: "any",
 				Approvers: []*sdm.ApprovalFlowApprover{
 					{AccountID: account2ID},
-					{Reference: "manager-of-requester"},
+					{Reference: sdm.ApproverReferenceManagerOfRequester},
 				},
 			},
 			{
@@ -176,7 +176,7 @@ func main() {
 				SkipAfter:  time.Hour,
 				Approvers: []*sdm.ApprovalFlowApprover{
 					{RoleID: roleID},
-					{Reference: "manager-of-manager-of-requester"},
+					{Reference: sdm.ApproverReferenceManagerOfManagerOfRequester},
 				},
 			},
 		},
