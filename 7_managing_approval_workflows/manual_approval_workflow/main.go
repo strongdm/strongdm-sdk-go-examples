@@ -117,8 +117,10 @@ func main() {
 		for _, approver := range step.Approvers {
 			if approver.AccountID != "" {
 				fmt.Print(approver.AccountID, ", ")
-			} else {
+			} else if approver.RoleID != "" {
 				fmt.Print(approver.RoleID, ", ")
+			} else {
+				fmt.Print(approver.Reference, ", ")
 			}
 		}
 		fmt.Println()
@@ -142,8 +144,10 @@ func main() {
 		for _, approver := range step.Approvers {
 			if approver.AccountID != "" {
 				fmt.Print(approver.AccountID, ", ")
-			} else {
+			} else if approver.RoleID != "" {
 				fmt.Print(approver.RoleID, ", ")
+			} else {
+				fmt.Print(approver.Reference, ", ")
 			}
 		}
 		fmt.Println()
