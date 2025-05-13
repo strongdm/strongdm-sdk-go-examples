@@ -36,14 +36,14 @@ func main() {
 	}
 
 	// Create the client
-	client, err := sdm.New(accessKey, secretKey, sdm.WithHost("localhost:8888"), sdm.WithInsecure())
+	client, err := sdm.New(accessKey, secretKey)
 	if err != nil {
 		log.Fatal("failed to create strongDM client:", err)
 	}
 
 	// Create a User
 	user := &sdm.User{
-		Email:           "create-user@example.com",
+		Email:           "go-create-user@example.com",
 		FirstName:       "example",
 		LastName:        "example",
 		PermissionLevel: sdm.PermissionLevelTeamLeader,
@@ -64,7 +64,7 @@ func main() {
 
 	// Assign user as manager for another user
 	user2 := &sdm.User{
-		Email:     "create-user2@example.com",
+		Email:     "go-create-user2@example.com",
 		FirstName: "example2",
 		LastName:  "example2",
 		ManagerID: id,

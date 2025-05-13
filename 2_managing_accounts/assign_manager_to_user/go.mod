@@ -2,4 +2,4 @@ module github.com/strongdm/strongdm-sdk-go-examples/2_managing_accounts/assign_m
 
 go 1.14
 
-require github.com/strongdm/strongdm-sdk-go/v14 v14.10.0
+require github.com/strongdm/strongdm-sdk-go/v14 v14.13.0
