@@ -1,4 +1,4 @@
-// Copyright 2024 StrongDM Inc
+// Copyright 2025 StrongDM Inc
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -44,7 +44,7 @@ func main() {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
-	
+
 	// Create a Postgres Datasource for example
 	datasource := &sdm.Postgres{
 		Name:         "Example Postgres Datasource",
