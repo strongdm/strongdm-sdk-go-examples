@@ -79,7 +79,7 @@ func main() {
 	}
 	flow = updated.ApprovalWorkflow
 
-	fmt.Println("Successfully update approval workflow name.")
+	fmt.Println("Successfully updated approval workflow name.")
 	fmt.Println("\tNew Name:", flow.Name)
 
 	// Update approval workflow Description
@@ -91,7 +91,7 @@ func main() {
 	}
 	flow = updated.ApprovalWorkflow
 
-	fmt.Println("Successfully update approval workflow description.")
+	fmt.Println("Successfully updated approval workflow description.")
 	fmt.Println("\tNew Description:", flow.Description)
 
 	// Update approval workflow approval mode
@@ -103,7 +103,7 @@ func main() {
 	}
 	flow = updated.ApprovalWorkflow
 
-	fmt.Println("Successfully update approval workflow approval mode.")
+	fmt.Println("Successfully updated approval workflow approval mode.")
 	fmt.Println("\tNew Approval Mode:", flow.ApprovalMode)
 
 	// Delete the approval workflow
