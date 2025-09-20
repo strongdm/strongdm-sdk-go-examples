@@ -20,7 +20,7 @@ import (
 	"os"
 	"time"
 
-	sdm "github.com/strongdm/strongdm-sdk-go/v14"
+	sdm "github.com/strongdm/strongdm-sdk-go/v15"
 )
 
 // Example showing how to create approval workflows using groups as approvers
@@ -131,8 +131,8 @@ func main() {
 				Quantifier: "all",
 				SkipAfter:  time.Hour * 2,
 				Approvers: []*sdm.ApprovalFlowApprover{
-					{GroupID: adminGroupID},     // Administrators group
-					{GroupID: devOpsGroupID},    // DevOps Team group
+					{GroupID: adminGroupID},                              // Administrators group
+					{GroupID: devOpsGroupID},                             // DevOps Team group
 					{Reference: sdm.ApproverReferenceManagerOfRequester}, // Plus manager
 				},
 			},
@@ -141,8 +141,8 @@ func main() {
 				Quantifier: "any",
 				SkipAfter:  time.Hour,
 				Approvers: []*sdm.ApprovalFlowApprover{
-					{GroupID: securityGroupID},  // Security Team
-					{GroupID: adminGroupID},     // Administrators
+					{GroupID: securityGroupID}, // Security Team
+					{GroupID: adminGroupID},    // Administrators
 					{Reference: sdm.ApproverReferenceManagerOfManagerOfRequester},
 				},
 			},
@@ -153,13 +153,13 @@ func main() {
 	if err != nil {
 		log.Fatalf("Could not create approval workflow: %v", err)
 	}
-	
+
 	fmt.Println("\nSuccessfully created group-based approval workflow.")
 	fmt.Println("\tID:", resp.ApprovalWorkflow.ID)
 	fmt.Println("\tName:", resp.ApprovalWorkflow.Name)
 	fmt.Println("\tDescription:", resp.ApprovalWorkflow.Description)
 	fmt.Println("\tNumber of Approval Steps:", len(resp.ApprovalWorkflow.ApprovalWorkflowSteps))
-	
+
 	for i, step := range resp.ApprovalWorkflow.ApprovalWorkflowSteps {
 		fmt.Printf("\nStep %d:\n", i+1)
 		fmt.Printf("\tQuantifier: %s\n", step.Quantifier)
@@ -210,7 +210,7 @@ func main() {
 	fmt.Println("\tNew Name:", updated.ApprovalWorkflow.Name)
 	fmt.Println("\tNew Description:", updated.ApprovalWorkflow.Description)
 	fmt.Println("\tSteps after update:", len(updated.ApprovalWorkflow.ApprovalWorkflowSteps))
-	
+
 	step := updated.ApprovalWorkflow.ApprovalWorkflowSteps[0]
 	fmt.Printf("\tApprovers in updated step (any of these groups can approve):\n")
 	for _, approver := range step.Approvers {
