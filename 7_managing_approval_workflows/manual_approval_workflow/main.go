@@ -77,6 +77,16 @@ func main() {
 	}
 	roleID := roleCreateResponse.Role.ID
 
+	// Create an approver group - this group is designated as an approver in the approval workflow created below,
+	// allowing any user in this group to grant approval
+	groupCreateResponse, err := client.Groups().Create(ctx, &sdm.Group{
+		Name: "example group for approval workflow approver group",
+	})
+	if err != nil {
+		log.Fatalf("Could not create group: %v", err)
+	}
+	groupID := groupCreateResponse.Group.ID
+
 	// Create a manual grant approval workflow with multiple approval steps
 	af := &sdm.ApprovalWorkflow{
 		Name:         "Example Create Approval Workflow Manual",
@@ -87,6 +97,7 @@ func main() {
 				Quantifier: "any",
 				Approvers: []*sdm.ApprovalFlowApprover{
 					{AccountID: accountID},
+					{GroupID: groupID}, // Group approver added
 				},
 			},
 			{
@@ -95,6 +106,7 @@ func main() {
 				Approvers: []*sdm.ApprovalFlowApprover{
 					{AccountID: account2ID},
 					{RoleID: roleID},
+					{GroupID: groupID}, // Group approver added
 					{Reference: sdm.ApproverReferenceManagerOfRequester},
 					{Reference: sdm.ApproverReferenceManagerOfManagerOfRequester},
 				},
@@ -119,6 +131,8 @@ func main() {
 				fmt.Print(approver.AccountID, ", ")
 			} else if approver.RoleID != "" {
 				fmt.Print(approver.RoleID, ", ")
+			} else if approver.GroupID != "" {
+				fmt.Print(approver.GroupID, ", ")
 			} else {
 				fmt.Print(approver.Reference, ", ")
 			}
@@ -146,6 +160,8 @@ func main() {
 				fmt.Print(approver.AccountID, ", ")
 			} else if approver.RoleID != "" {
 				fmt.Print(approver.RoleID, ", ")
+			} else if approver.GroupID != "" {
+				fmt.Print(approver.GroupID, ", ")
 			} else {
 				fmt.Print(approver.Reference, ", ")
 			}
@@ -166,12 +182,14 @@ func main() {
 				SkipAfter:  time.Hour * 2,
 				Approvers: []*sdm.ApprovalFlowApprover{
 					{AccountID: accountID},
+					{GroupID: groupID}, // Group approver added to updated workflow
 				},
 			},
 			{
 				Quantifier: "any",
 				Approvers: []*sdm.ApprovalFlowApprover{
 					{AccountID: account2ID},
+					{GroupID: groupID}, // Group approver added to updated workflow
 					{Reference: sdm.ApproverReferenceManagerOfRequester},
 				},
 			},
@@ -180,6 +198,7 @@ func main() {
 				SkipAfter:  time.Hour,
 				Approvers: []*sdm.ApprovalFlowApprover{
 					{RoleID: roleID},
+					{GroupID: groupID}, // Group approver added to updated workflow
 					{Reference: sdm.ApproverReferenceManagerOfManagerOfRequester},
 				},
 			},
@@ -192,7 +211,7 @@ func main() {
 	}
 	flow = updated.ApprovalWorkflow
 
-	fmt.Println("Successfully update approval workflow.")
+	fmt.Println("Successfully updated approval workflow.")
 	fmt.Println("\tNew Name:", flow.Name)
 	fmt.Println("\tNew Description:", flow.Description)
 	fmt.Println("\tNew Approval Mode:", flow.ApprovalMode)
@@ -207,7 +226,7 @@ func main() {
 	}
 	flow = updated.ApprovalWorkflow
 
-	fmt.Println("Successfully update approval workflow.")
+	fmt.Println("Successfully updated approval workflow.")
 	fmt.Println("\tNew Name:", flow.Name)
 	fmt.Println("\tNew Description:", flow.Description)
 	fmt.Println("\tNew Approval Mode:", flow.ApprovalMode)
