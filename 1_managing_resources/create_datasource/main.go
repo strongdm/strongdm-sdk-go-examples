@@ -44,19 +44,42 @@ func main() {
 	}
 
 	// Define the Postgres Datasource
-	// Set `PortOverride` to `-1` to auto-generate a port if Port Overrides is enabled.
 	datasource := &sdm.Postgres{
-		Name:         "Example Postgres Datasource",
-		Hostname:     "example.strongdm.com",
-		Port:         5432,
-		Username:     "example",
-		Password:     "example",
-		Database:     "example",
+		Name:     "Example Postgres Datasource",
+		Hostname: "example.strongdm.com",
+		Port:     5432,
+		Username: "example",
+		Password: "example",
+		Database: "example",
+		// May be set to one of the ResourceIPAllocationMode constants to select between VNM,
+		// loopback, or default allocation. If not set, will be behave as if configured for
+		// 'default'.
+		// For more details on Virtual Networking Mode see documentation here:
+		// https://docs.strongdm.com/admin/clients/client-networking/virtual-networking-mode
+		BindInterface: sdm.ResourceIPAllocationModeLoopback,
+		// Set `PortOverride` to `-1` to auto-allocate an available port.
 		PortOverride: 19999,
 		Tags: sdm.Tags{
 			"example": "example",
 		},
 	}
+
+	// You can also specify an explicit loopback IP address to bind to if Loopback IP Ranges
+	// are enabled as documented here:
+	// https://docs.strongdm.com/admin/clients/client-networking/loopback-ip-ranges
+	datasource.BindInterface = "127.0.0.2"
+
+	// ...Or if your organization has Virtual Networking Mode enabled,
+	// you may configure the resource's bind interface
+	// to automatically get an IP allocated upon creation:
+	datasource.BindInterface = sdm.ResourceIPAllocationModeVNM
+
+	// ...Or specify an explicit VNM IP address to bind to...
+	datasource.BindInterface = "100.64.0.1"
+
+	// Your organization can default either to 'loopback' or 'vnm', and
+	// ResourceIPAllocationModeDefault will honor that.
+	datasource.BindInterface = sdm.ResourceIPAllocationModeDefault
 
 	// Create the Datasource
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
