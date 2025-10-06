@@ -24,10 +24,10 @@ import (
 )
 
 func main() {
-	//	Load the SDM API keys from the environment.
-	//	If these values are not set in your environment,
-	//	please follow the documentation here:
-	//	https://www.strongdm.com/docs/api/api-keys/
+	// Load the SDM API keys from the environment.
+	// If these values are not set in your environment,
+	// please follow the documentation here:
+	// https://docs.strongdm.com/references/api/api-keys
 	accessKey := os.Getenv("SDM_API_ACCESS_KEY")
 	secretKey := os.Getenv("SDM_API_SECRET_KEY")
 	if accessKey == "" || secretKey == "" {
