@@ -20,7 +20,7 @@ import (
 	"os"
 	"time"
 
-	sdm "github.com/strongdm/strongdm-sdk-go/v2"
+	sdm "github.com/strongdm/strongdm-sdk-go/v15"
 )
 
 func main() {
