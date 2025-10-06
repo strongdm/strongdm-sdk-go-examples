@@ -82,13 +82,37 @@ func main() {
 	// Update the fields to change
 	updatedPostgresDatasource.SetName("Example Name Updated")
 
+	// If your organization has Virtual Networking Mode enabled,
+	// you can automatically allocate an IP to that resource via the ResourceIPAllocationModeVNM constant...
+	updatedPostgresDatasource.SetBindInterface(sdm.ResourceIPAllocationModeVNM)
+
+	// ...Or fallback to whatever the default behavior is for your organization...
+	updatedPostgresDatasource.SetBindInterface(sdm.ResourceIPAllocationModeDefault)
+
+	// ...Or if there is a specific IP to bind to, you can specify it directly.
+	// For more details on Virtual Networking Mode see documentation here:
+	// https://docs.strongdm.com/admin/clients/client-networking/virtual-networking-mode
+	updatedPostgresDatasource.SetBindInterface("127.0.0.1")
+
+	if pg, ok := updatedPostgresDatasource.(*sdm.Postgres); ok {
+		// Update `PortOverride` to `-1` to auto-allocate a different available port.
+		pg.PortOverride = -1
+	}
+
 	// Update the Datasource
 	updateResponse, err := client.Resources().Update(ctx, updatedPostgresDatasource)
 	if err != nil {
 		log.Fatalf("Could not update Postgres datasource: %v", err)
 	}
 
+	newPortOverride := 0
+	if pg, ok := updateResponse.Resource.(*sdm.Postgres); ok {
+		newPortOverride = int(pg.PortOverride)
+	}
+
 	fmt.Println("Successfully updated Postgres datasource.")
 	fmt.Println("\tID:", updateResponse.Resource.GetID())
 	fmt.Println("\tName:", updateResponse.Resource.GetName())
+	fmt.Println("\tBindInterface:", updateResponse.Resource.GetBindInterface())
+	fmt.Println("\tPortOverride:", newPortOverride)
 }
