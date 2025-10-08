@@ -52,7 +52,7 @@ func main() {
 		Password: "example",
 		Database: "example",
 		// May be set to one of the ResourceIPAllocationMode constants to select between VNM,
-		// loopback, or default allocation. If not set, will be behave as if configured for
+		// loopback, or default allocation. If not set, will behave as if configured for
 		// 'default'.
 		// For more details on Virtual Networking Mode see documentation here:
 		// https://docs.strongdm.com/admin/clients/client-networking/virtual-networking-mode
