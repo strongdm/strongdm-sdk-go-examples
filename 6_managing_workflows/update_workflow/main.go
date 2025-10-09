@@ -20,7 +20,7 @@ import (
 	"os"
 	"time"
 
-	sdm "github.com/strongdm/strongdm-sdk-go/v4"
+	sdm "github.com/strongdm/strongdm-sdk-go/v15"
 )
 
 func main() {
@@ -93,23 +93,34 @@ func main() {
 	fmt.Println("Successfully update Workflow Weight.")
 	fmt.Println("\tNew Weight:", wf.Weight)
 
-	// Update Workflow AutoGrant
-	auto := wf.AutoGrant
-	wf.AutoGrant = !auto
+	// Create an automatic ApprovalWorkflow
+	approvalFlow := &sdm.ApprovalWorkflow{
+		Name:         "Auto Grant Example",
+		ApprovalMode: "automatic",
+	}
+	approvalResponse, err := client.ApprovalWorkflows().Create(ctx, approvalFlow)
+	if err != nil {
+		log.Fatalf("Could not create approval workflow: %v", err)
+	}
+
+	fmt.Println("Successfully create new ApprovalWorkflow.")
+	fmt.Println("\tApproval Flow ID:", approvalResponse.ApprovalWorkflow.ID)
+
+	// Update Workflow ApprovalFlow
+	wf.ApprovalFlowID = approvalResponse.ApprovalWorkflow.ID
 	updated, err = client.Workflows().Update(ctx, wf)
 	if err != nil {
 		log.Fatalf("Could not update workflow: %v", err)
 	}
 	wf = updated.Workflow
 
-	fmt.Println("Successfully update Workflow AutoGrant.")
-	fmt.Println("\tAutoGrant:", wf.AutoGrant)
+	fmt.Println("Successfully update Workflow ApprovalFlow.")
+	fmt.Println("\tNew ID:", wf.ApprovalFlowID)
 
 	// Update Workflow Enabled
 	// The requirements to enable a workflow are that the workflow must be either set
-	// up for with auto grant enabled or have one or more WorkflowApprovers created for
+	// up with an automatic grant enabled or have one or more WorkflowApprovers created for
 	// the workflow.
-	wf.AutoGrant = true
 	wf.Enabled = true
 	updated, err = client.Workflows().Update(ctx, wf)
 	if err != nil {
