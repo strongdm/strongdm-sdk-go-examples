@@ -20,7 +20,7 @@ import (
 	"os"
 	"time"
 
-	sdm "github.com/strongdm/strongdm-sdk-go/v4"
+	sdm "github.com/strongdm/strongdm-sdk-go/v15"
 )
 
 func main() {
@@ -44,12 +44,59 @@ func main() {
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
-	// Create a manual Workflow with initial Access Rule
+	// Create an approver account that will participate in the manual approval flow.
+	approverResp, err := client.Accounts().Create(ctx, &sdm.User{
+		Email:     "manual-workflow-approver@example.com",
+		FirstName: "Example",
+		LastName:  "Approver",
+	})
+	if err != nil {
+		log.Fatalf("Could not create approver account: %v", err)
+	}
+	approverID := approverResp.Account.GetID()
+
+	// Create a role so we can demonstrate using role-based approvers in the approval workflow.
+	roleCreateResponse, err := client.Roles().Create(ctx, &sdm.Role{
+		Name: "Example Role for Manual Approval Workflow",
+	})
+	if err != nil {
+		log.Fatalf("Could not create role: %v", err)
+	}
+	roleID := roleCreateResponse.Role.ID
+
+	// Build a manual ApprovalWorkflow that references the approver created above.
+	approvalWorkflow := &sdm.ApprovalWorkflow{
+		Name:         "Example Manual Approval Workflow",
+		Description:  "Manual approval flow to back the access workflow example",
+		ApprovalMode: "manual",
+		ApprovalWorkflowSteps: []*sdm.ApprovalFlowStep{
+			{
+				Quantifier: "any",
+				Approvers: []*sdm.ApprovalFlowApprover{
+					{AccountID: approverID},
+				},
+			},
+		},
+	}
+
+	approvalCreateResponse, err := client.ApprovalWorkflows().Create(ctx, approvalWorkflow)
+	if err != nil {
+		log.Fatalf("Could not create approval workflow: %v", err)
+	}
+	createdApprovalWorkflow := approvalCreateResponse.ApprovalWorkflow
+
+	fmt.Println("Successfully created manual ApprovalWorkflow.")
+	fmt.Println("\tID:", createdApprovalWorkflow.ID)
+	fmt.Println("\tName:", createdApprovalWorkflow.Name)
+
+	// Create the Workflow and bind it to the ApprovalWorkflow by setting ApprovalFlowID.
 	workflow := &sdm.Workflow{
-		Name:        "Full Example Create Manual Workflow",
-		Description: "Example Workflow Description",
+		Name:           "Full Example Create Manual Workflow",
+		Description:    "Example Workflow Description",
+		ApprovalFlowID: createdApprovalWorkflow.ID,
+		Enabled:        true,
 		AccessRules: sdm.AccessRules{
-			sdm.AccessRule{
+			{
 				Tags: sdm.Tags{
 					"env": "dev",
 				},
@@ -63,31 +110,15 @@ func main() {
 	}
 
 	wf := createResponse.Workflow
-	workflowID := wf.ID
-	workflowName := wf.Name
 
 	fmt.Println("Successfully created Workflow.")
-	fmt.Println("\tID:", workflowID)
-	fmt.Println("\tName:", workflowName)
+	fmt.Println("\tID:", wf.ID)
+	fmt.Println("\tName:", wf.Name)
+	fmt.Println("\tApproval Flow ID:", wf.ApprovalFlowID)
 
-	// To allow users access to the resources managed by this workflow, you must
-	// add workflow roles to the workflow.
-	// Two steps are needed to add a workflow role:
-	// Step 1: create a Role
-	// Step 2: create a WorkflowRole
-
-	// Create a Role - used for creating a workflow role
-	roleCreateResponse, err := client.Roles().Create(ctx, &sdm.Role{
-		Name: "Example Role for Manual Workflow",
-	})
-	if err != nil {
-		log.Fatalf("Could not create role: %v", err)
-	}
-	roleID := roleCreateResponse.Role.ID
-
-	// Create a WorkflowRole
+	// Add a workflow role so members of the role can request access through this workflow.
 	_, err = client.WorkflowRoles().Create(ctx, &sdm.WorkflowRole{
-		WorkflowID: workflowID,
+		WorkflowID: wf.ID,
 		RoleID:     roleID,
 	})
 	if err != nil {
@@ -95,49 +126,6 @@ func main() {
 	}
 
 	fmt.Println("Successfully created WorkflowRole.")
-	fmt.Println("\tWorkflow ID:", workflowID)
+	fmt.Println("\tWorkflow ID:", wf.ID)
 	fmt.Println("\tRole ID:", roleID)
-
-	// To manually enable this workflow, you must add workflow approvers
-	// to this workflow.
-	// Two steps are needed to add a workflow approver:
-	// Step 1: create an Account
-	// Step 2: create a WorkflowApprover
-
-	// Create a approver - used for creating a workflow approver
-	approverCreateResponse, err := client.Accounts().Create(ctx, &sdm.User{
-		Email:     "create-workflow-full-example@example.com",
-		FirstName: "Example",
-		LastName:  "Approver",
-	})
-	if err != nil {
-		log.Fatalf("Could not create approver: %v", err)
-	}
-	approverID := approverCreateResponse.Account.GetID()
-
-	// Create a WorkflowApprover
-	_, err = client.WorkflowApprovers().Create(ctx, &sdm.WorkflowApprover{
-		WorkflowID: workflowID,
-		ApproverID: approverID,
-	})
-	if err != nil {
-		log.Fatalf("Could not create workflow approver: %v", err)
-	}
-
-	fmt.Println("Successfully created WorkflowApprover.")
-	fmt.Println("\tWorkflow ID:", workflowID)
-	fmt.Println("\tApprover ID:", approverID)
-
-	// You can enable this workflow after adding workflow approvers.
-	// Update Workflow Enabled
-	wf.Enabled = true
-	workflowUpdateResponse, err := client.Workflows().Update(ctx, wf)
-	if err != nil {
-		log.Fatalf("Could not update workflow: %v", err)
-	}
-	wf = workflowUpdateResponse.Workflow
-
-	fmt.Println("Successfully updated Workflow Enabled.")
-	fmt.Println("\tWorkflow ID:", workflowID)
-	fmt.Println("\tEnabled:", wf.Enabled)
 }

@@ -20,7 +20,7 @@ import (
 	"os"
 	"time"
 
-	sdm "github.com/strongdm/strongdm-sdk-go/v4"
+	sdm "github.com/strongdm/strongdm-sdk-go/v15"
 )
 
 func main() {
@@ -44,11 +44,21 @@ func main() {
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
+	// Create an automatic ApprovalWorkflow
+	approvalFlow := &sdm.ApprovalWorkflow{
+		Name:         "Auto Grant Example",
+		ApprovalMode: "automatic",
+	}
+	approvalResponse, err := client.ApprovalWorkflows().Create(ctx, approvalFlow)
+	if err != nil {
+		log.Fatalf("Could not create approval workflow: %v", err)
+	}
+
 	// Create an auto grant Workflow with initial Access Rule
 	workflow := &sdm.Workflow{
 		Name:        "Full Example Create Auto Grant Workflow",
 		Description: "Example Workflow Description",
-		AutoGrant:   true,
+		ApprovalFlowID: approvalResponse.ApprovalWorkflow.ID,
 		Enabled:     true,
 		AccessRules: sdm.AccessRules{
 			sdm.AccessRule{
